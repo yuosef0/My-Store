@@ -1,7 +1,9 @@
+// src/app/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { useCart } from "../contexts/CartContext";
 import Link from "next/link";
 
 interface Product {
@@ -19,6 +21,8 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { addToCart, totalItems } = useCart();
+  const [addedProducts, setAddedProducts] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -42,6 +46,26 @@ export default function Home() {
     fetchProducts();
   }, []);
 
+  const handleAddToCart = (product: Product) => {
+    addToCart({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image_url: product.image_url,
+      stock: product.stock,
+    });
+
+    // إضافة تأثير بصري
+    setAddedProducts((prev) => new Set(prev).add(product.id));
+    setTimeout(() => {
+      setAddedProducts((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(product.id);
+        return newSet;
+      });
+    }, 1000);
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -64,15 +88,30 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">🛍️ متجري</h1>
-          <Link 
-            href="/admin" 
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-          >
-            إضافة منتج
-          </Link>
+          
+          <div className="flex gap-4">
+            <Link 
+              href="/cart" 
+              className="relative bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+            >
+              🛒 السلة
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold">
+                  {totalItems}
+                </span>
+              )}
+            </Link>
+            
+            <Link 
+              href="/admin" 
+              className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
+            >
+              ⚙️ الإدارة
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -141,10 +180,19 @@ export default function Home() {
                     </div>
 
                     <button
+                      onClick={() => handleAddToCart(product)}
                       disabled={product.stock === 0}
-                      className="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+                      className={`w-full mt-4 py-2 rounded-lg font-semibold transition ${
+                        addedProducts.has(product.id)
+                          ? "bg-green-600 text-white"
+                          : "bg-blue-600 text-white hover:bg-blue-700"
+                      } disabled:bg-gray-300 disabled:cursor-not-allowed`}
                     >
-                      {product.stock === 0 ? "غير متوفر" : "إضافة للسلة"}
+                      {product.stock === 0 
+                        ? "غير متوفر" 
+                        : addedProducts.has(product.id)
+                        ? "✓ تمت الإضافة"
+                        : "إضافة للسلة"}
                     </button>
                   </div>
                 </div>
