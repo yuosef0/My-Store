@@ -16,7 +16,7 @@
 -- ⚠️ احذف التعليق من الأسطر التالية إذا أردت حذف البيانات القديمة والبدء من جديد
 -- ⚠️ WARNING: This will delete all existing data!
 
-/*
+
 DROP TABLE IF EXISTS wishlists CASCADE;
 DROP TABLE IF EXISTS reviews CASCADE;
 DROP TABLE IF EXISTS coupons CASCADE;
@@ -32,7 +32,7 @@ DROP FUNCTION IF EXISTS get_product_review_count(UUID) CASCADE;
 DROP FUNCTION IF EXISTS is_coupon_valid(VARCHAR, DECIMAL) CASCADE;
 DROP FUNCTION IF EXISTS is_admin(UUID) CASCADE;
 DROP FUNCTION IF EXISTS get_admin_role(UUID) CASCADE;
-*/
+
 
 
 -- ============================================
