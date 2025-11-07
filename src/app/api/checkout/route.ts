@@ -16,7 +16,7 @@ const supabase = createClient(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { items, customerInfo } = body;
+    const { items, customerInfo, coupon } = body;
 
     // التحقق من البيانات
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -34,9 +34,13 @@ export async function POST(request: NextRequest) {
     }
 
     // حساب المجموع الكلي
-    const totalAmount = items.reduce((total: number, item: any) => {
+    const subtotal = items.reduce((total: number, item: any) => {
       return total + (item.price * item.quantity);
     }, 0);
+
+    // تطبيق الخصم إذا كان هناك كوبون
+    const discountAmount = coupon && coupon.discount ? coupon.discount : 0;
+    const totalAmount = Math.max(subtotal - discountAmount, 0);
 
     // تحويل المنتجات لصيغة Stripe
     const lineItems = items.map((item: any) => ({
@@ -79,6 +83,8 @@ export async function POST(request: NextRequest) {
           customer_address: customerInfo.address,
           customer_city: customerInfo.city,
           total_amount: totalAmount,
+          discount_amount: discountAmount,
+          coupon_code: coupon && coupon.code ? coupon.code : null,
           stripe_session_id: session.id,
           payment_status: 'pending',
           order_status: 'processing',
