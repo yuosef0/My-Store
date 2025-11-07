@@ -8,14 +8,86 @@ import { useState } from "react";
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, totalPrice } = useCart();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [customerInfo, setCustomerInfo] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+  });
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!customerInfo.name.trim()) {
+      newErrors.name = "الاسم مطلوب";
+    }
+    if (!customerInfo.email.trim()) {
+      newErrors.email = "البريد الإلكتروني مطلوب";
+    } else if (!/\S+@\S+\.\S+/.test(customerInfo.email)) {
+      newErrors.email = "البريد الإلكتروني غير صالح";
+    }
+    if (!customerInfo.address.trim()) {
+      newErrors.address = "العنوان مطلوب";
+    }
+    if (!customerInfo.city.trim()) {
+      newErrors.city = "المدينة مطلوبة";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleCheckout = async () => {
+    if (!validateForm()) {
+      alert("يرجى إكمال جميع الحقول المطلوبة");
+      return;
+    }
+
     setIsProcessing(true);
-    // هنضيف الدفع بـ Stripe لاحقاً
-    setTimeout(() => {
-      alert("جاري تطوير نظام الدفع...");
+
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items: cart,
+          customerInfo,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.url) {
+        // توجيه المستخدم إلى صفحة الدفع في Stripe
+        window.location.href = data.url;
+      } else {
+        alert(data.error || "حدث خطأ في معالجة الطلب");
+        setIsProcessing(false);
+      }
+    } catch (error) {
+      console.error("خطأ في الاتصال:", error);
+      alert("حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى");
       setIsProcessing(false);
-    }, 1000);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setCustomerInfo((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    // إزالة رسالة الخطأ عند الكتابة
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
   };
 
   if (cart.length === 0) {
@@ -119,11 +191,109 @@ export default function CartPage() {
             ))}
           </div>
 
-          {/* Order Summary */}
-          <div className="lg:col-span-1">
+          {/* Order Summary & Customer Info */}
+          <div className="lg:col-span-1 space-y-4">
+            {/* Customer Information Form */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-xl font-bold mb-4">معلومات الشحن</h2>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    الاسم الكامل <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={customerInfo.name}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      errors.name ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder="أدخل اسمك الكامل"
+                  />
+                  {errors.name && (
+                    <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    البريد الإلكتروني <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={customerInfo.email}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      errors.email ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder="example@email.com"
+                  />
+                  {errors.email && (
+                    <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    رقم الهاتف
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={customerInfo.phone}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="+20 123 456 7890"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    العنوان <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="address"
+                    value={customerInfo.address}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      errors.address ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder="الشارع، رقم المنزل، الحي"
+                  />
+                  {errors.address && (
+                    <p className="text-red-500 text-xs mt-1">{errors.address}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    المدينة <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={customerInfo.city}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      errors.city ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder="القاهرة، الإسكندرية، إلخ"
+                  />
+                  {errors.city && (
+                    <p className="text-red-500 text-xs mt-1">{errors.city}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Order Summary */}
             <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
               <h2 className="text-xl font-bold mb-4">ملخص الطلب</h2>
-              
+
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-gray-600">
                   <span>المجموع الفرعي</span>
@@ -144,7 +314,7 @@ export default function CartPage() {
                 disabled={isProcessing}
                 className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 transition"
               >
-                {isProcessing ? "جارٍ المعالجة..." : "إتمام الطلب"}
+                {isProcessing ? "جارٍ التحويل للدفع..." : "متابعة للدفع 💳"}
               </button>
 
               <Link
@@ -153,6 +323,10 @@ export default function CartPage() {
               >
                 متابعة التسوق
               </Link>
+
+              <p className="text-xs text-gray-500 text-center mt-4">
+                الدفع الآمن عبر Stripe 🔒
+              </p>
             </div>
           </div>
         </div>
