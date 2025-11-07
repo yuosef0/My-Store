@@ -17,6 +17,16 @@ export default function CartPage() {
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  // Coupon states
+  const [couponCode, setCouponCode] = useState("");
+  const [couponValidating, setCouponValidating] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    discount: number;
+    message: string;
+  } | null>(null);
+  const [couponError, setCouponError] = useState("");
+
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
@@ -39,6 +49,60 @@ export default function CartPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // التحقق من الكوبون
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponError("الرجاء إدخال كود الكوبون");
+      return;
+    }
+
+    setCouponValidating(true);
+    setCouponError("");
+
+    try {
+      const response = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: couponCode.trim().toUpperCase(),
+          total: totalPrice,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.valid) {
+        setAppliedCoupon({
+          code: couponCode.trim().toUpperCase(),
+          discount: data.discount,
+          message: data.message,
+        });
+        setCouponError("");
+      } else {
+        setCouponError(data.message || "الكوبون غير صالح");
+        setAppliedCoupon(null);
+      }
+    } catch (error) {
+      console.error("خطأ في التحقق من الكوبون:", error);
+      setCouponError("حدث خطأ في التحقق من الكوبون");
+      setAppliedCoupon(null);
+    } finally {
+      setCouponValidating(false);
+    }
+  };
+
+  // إلغاء الكوبون
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponError("");
+  };
+
+  // حساب المجموع النهائي
+  const finalTotal = appliedCoupon
+    ? Math.max(totalPrice - appliedCoupon.discount, 0)
+    : totalPrice;
+
   const handleCheckout = async () => {
     if (!validateForm()) {
       alert("يرجى إكمال جميع الحقول المطلوبة");
@@ -56,6 +120,12 @@ export default function CartPage() {
         body: JSON.stringify({
           items: cart,
           customerInfo,
+          coupon: appliedCoupon
+            ? {
+                code: appliedCoupon.code,
+                discount: appliedCoupon.discount,
+              }
+            : null,
         }),
       });
 
@@ -290,6 +360,59 @@ export default function CartPage() {
               </div>
             </div>
 
+            {/* Coupon Code Section */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-xl font-bold mb-4">🎟️ كود الخصم</h2>
+
+              {!appliedCoupon ? (
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={couponCode}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value.toUpperCase());
+                        setCouponError("");
+                      }}
+                      placeholder="أدخل كود الكوبون"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
+                    />
+                    <button
+                      onClick={handleApplyCoupon}
+                      disabled={couponValidating || !couponCode.trim()}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition whitespace-nowrap"
+                    >
+                      {couponValidating ? "جارٍ التحقق..." : "تطبيق"}
+                    </button>
+                  </div>
+
+                  {couponError && (
+                    <p className="text-red-600 text-sm">{couponError}</p>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <div>
+                      <p className="font-semibold text-green-800">
+                        {appliedCoupon.code}
+                      </p>
+                      <p className="text-sm text-green-600">
+                        خصم {appliedCoupon.discount.toFixed(2)} ج.م
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleRemoveCoupon}
+                      className="text-red-600 hover:text-red-700 text-sm font-medium"
+                    >
+                      إلغاء
+                    </button>
+                  </div>
+                  <p className="text-sm text-green-600">✓ {appliedCoupon.message}</p>
+                </div>
+              )}
+            </div>
+
             {/* Order Summary */}
             <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
               <h2 className="text-xl font-bold mb-4">ملخص الطلب</h2>
@@ -299,14 +422,31 @@ export default function CartPage() {
                   <span>المجموع الفرعي</span>
                   <span>{totalPrice.toFixed(2)} ج.م</span>
                 </div>
+
+                {appliedCoupon && (
+                  <div className="flex justify-between text-green-600 font-medium">
+                    <span>الخصم ({appliedCoupon.code})</span>
+                    <span>- {appliedCoupon.discount.toFixed(2)} ج.م</span>
+                  </div>
+                )}
+
                 <div className="flex justify-between text-gray-600">
                   <span>رسوم الشحن</span>
                   <span>مجاناً</span>
                 </div>
+
                 <div className="border-t pt-3 flex justify-between font-bold text-lg">
                   <span>الإجمالي</span>
-                  <span className="text-blue-600">{totalPrice.toFixed(2)} ج.م</span>
+                  <span className="text-blue-600">{finalTotal.toFixed(2)} ج.م</span>
                 </div>
+
+                {appliedCoupon && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm">
+                    <p className="text-green-800">
+                      🎉 وفرت {appliedCoupon.discount.toFixed(2)} ج.م
+                    </p>
+                  </div>
+                )}
               </div>
 
               <button
