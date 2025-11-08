@@ -5,18 +5,21 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 
 interface CartItem {
   id: string;
+  cartItemId: string; // معرف فريد للعنصر في السلة (product_id + size + color)
   title: string;
   price: number;
   image_url: string | null;
   quantity: number;
   stock: number;
+  size?: string;
+  color?: string;
 }
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (product: Omit<CartItem, "quantity">) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  addToCart: (product: Omit<CartItem, "cartItemId"> & { quantity?: number }) => void;
+  removeFromCart: (cartItemId: string) => void;
+  updateQuantity: (cartItemId: string, quantity: number) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
@@ -40,40 +43,43 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (product: Omit<CartItem, "quantity">) => {
+  const addToCart = (product: Omit<CartItem, "cartItemId"> & { quantity?: number }) => {
     setCart((prev) => {
-      const existingItem = prev.find((item) => item.id === product.id);
-      
+      // إنشاء معرف فريد للعنصر بناءً على المنتج والمقاس واللون
+      const cartItemId = `${product.id}-${product.size || 'no-size'}-${product.color || 'no-color'}`;
+      const quantityToAdd = product.quantity || 1;
+
+      const existingItem = prev.find((item) => item.cartItemId === cartItemId);
+
       if (existingItem) {
-        // زيادة الكمية إذا كان المنتج موجود
-        if (existingItem.quantity < product.stock) {
-          return prev.map((item) =>
-            item.id === product.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          );
-        }
-        return prev; // لا تضيف إذا وصلت للحد الأقصى
+        // زيادة الكمية إذا كان نفس المنتج بنفس المقاس واللون موجود
+        const newQuantity = Math.min(existingItem.quantity + quantityToAdd, product.stock);
+        return prev.map((item) =>
+          item.cartItemId === cartItemId
+            ? { ...item, quantity: newQuantity }
+            : item
+        );
       }
-      
-      // إضافة منتج جديد
-      return [...prev, { ...product, quantity: 1 }];
+
+      // إضافة منتج جديد بالمقاس واللون المحددين
+      const finalQuantity = Math.min(quantityToAdd, product.stock);
+      return [...prev, { ...product, cartItemId, quantity: finalQuantity }];
     });
   };
 
-  const removeFromCart = (productId: string) => {
-    setCart((prev) => prev.filter((item) => item.id !== productId));
+  const removeFromCart = (cartItemId: string) => {
+    setCart((prev) => prev.filter((item) => item.cartItemId !== cartItemId));
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = (cartItemId: string, quantity: number) => {
     if (quantity < 1) {
-      removeFromCart(productId);
+      removeFromCart(cartItemId);
       return;
     }
 
     setCart((prev) =>
       prev.map((item) => {
-        if (item.id === productId) {
+        if (item.cartItemId === cartItemId) {
           const newQuantity = Math.min(quantity, item.stock);
           return { ...item, quantity: newQuantity };
         }

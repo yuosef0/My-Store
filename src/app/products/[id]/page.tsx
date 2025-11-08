@@ -76,14 +76,21 @@ export default function ProductDetailPage() {
       id: product.id,
       title: product.title,
       price: product.price,
-      image: product.images?.[0] || "",
+      image_url: images[0] || null,
+      stock: product.stock,
       quantity: quantity,
       size: selectedSize,
       color: selectedColor,
     });
 
-    setMessage("✅ تمت الإضافة إلى السلة!");
-    setTimeout(() => setMessage(""), 3000);
+    setMessage(`✅ تمت الإضافة إلى السلة! (${quantity} قطعة${selectedSize ? ` - ${selectedSize}` : ''}${selectedColor ? ` - ${selectedColor}` : ''})`);
+
+    // إعادة تعيين الاختيارات لإتاحة إضافة نفس المنتج بمواصفات مختلفة
+    setSelectedSize("");
+    setSelectedColor("");
+    setQuantity(1);
+
+    setTimeout(() => setMessage(""), 4000);
   };
 
   if (loading) {

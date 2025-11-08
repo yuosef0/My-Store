@@ -198,7 +198,7 @@ export default function CartPage() {
           <div className="lg:col-span-2 space-y-4">
             {cart.map((item) => (
               <div
-                key={item.id}
+                key={item.cartItemId}
                 className="bg-white rounded-lg shadow-md p-6 flex gap-4"
               >
                 {/* Product Image */}
@@ -219,6 +219,23 @@ export default function CartPage() {
                 {/* Product Info */}
                 <div className="flex-1">
                   <h3 className="font-bold text-lg mb-1">{item.title}</h3>
+
+                  {/* Size and Color */}
+                  {(item.size || item.color) && (
+                    <div className="flex gap-3 mb-2">
+                      {item.size && (
+                        <span className="text-sm bg-gray-100 px-2 py-1 rounded">
+                          📏 المقاس: <strong>{item.size}</strong>
+                        </span>
+                      )}
+                      {item.color && (
+                        <span className="text-sm bg-gray-100 px-2 py-1 rounded">
+                          🎨 اللون: <strong>{item.color}</strong>
+                        </span>
+                      )}
+                    </div>
+                  )}
+
                   <p className="text-blue-600 font-semibold mb-3">
                     {item.price.toFixed(2)} ج.م
                   </p>
@@ -226,14 +243,14 @@ export default function CartPage() {
                   {/* Quantity Controls */}
                   <div className="flex items-center gap-3">
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
                       className="w-8 h-8 bg-gray-200 rounded hover:bg-gray-300"
                     >
                       -
                     </button>
                     <span className="font-semibold">{item.quantity}</span>
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
                       disabled={item.quantity >= item.stock}
                       className="w-8 h-8 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
                     >
@@ -248,7 +265,7 @@ export default function CartPage() {
                 {/* Remove & Total */}
                 <div className="flex flex-col justify-between items-end">
                   <button
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => removeFromCart(item.cartItemId)}
                     className="text-red-600 hover:text-red-700 text-sm"
                   >
                     ✕ حذف
