@@ -389,83 +389,63 @@ export default function Home() {
 
       {/* Slider Section */}
       {sliderImages.length > 0 && (
-        <section className="max-w-6xl mx-auto px-4 py-4">
-          <div className="relative overflow-hidden rounded-lg shadow-xl aspect-[5/2]">
-            {/* Slides */}
-            <div className="relative w-full h-full">
+        <section className="container__slider">
               {sliderImages.map((image, index) => (
                 <div
                   key={image.id}
-                  className={`absolute inset-0 transition-opacity duration-1000 ${
-                    index === currentSlide ? "opacity-100" : "opacity-0"
+                  className={`slider__item ${
+                    index === 0 ? "slider__item-active-1" :
+                    index === 1 ? "slider__item-active-2" :
+                    index === 2 ? "slider__item-active-3" :
+                    "slider__item-active-4"
                   }`}
+                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}
                 >
-                  {/* Full Width Image */}
-                  <div className="relative w-full h-full bg-gray-200">
-                    <img
-                      src={image.image_url}
-                      alt={image.title || `Slide ${index + 1}`}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400'%3E%3Crect fill='%23ddd' width='800' height='400'/%3E%3Ctext fill='%23999' font-family='sans-serif' font-size='40' dy='10.5' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3E" + (image.title || "صورة السلايدر") + "%3C/text%3E%3C/svg%3E";
-                      }}
-                    />
-                  </div>
+                  <img
+                    src={image.image_url}
+                    alt={image.title || `Slide ${index + 1}`}
+                    onError={(e) => {
+                      e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400'%3E%3Crect fill='%23ddd' width='800' height='400'/%3E%3Ctext fill='%23999' font-family='sans-serif' font-size='40' dy='10.5' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3E" + (image.title || "صورة السلايدر") + "%3C/text%3E%3C/svg%3E";
+                    }}
+                  />
                 </div>
               ))}
-            </div>
 
             {/* Navigation Arrows & Controls */}
-            <div className="absolute inset-x-0 bottom-3 flex items-center justify-center gap-2">
+            <div className="controls">
               {/* Previous Button */}
               <button
                 onClick={() => setCurrentSlide((prev) => (prev === 0 ? sliderImages.length - 1 : prev - 1))}
-                className="w-8 h-8 rounded bg-white/80 hover:bg-white transition flex items-center justify-center shadow border border-gray-200"
+                className="slider__btn"
               >
-                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
+                ‹
               </button>
 
               {/* Dots Indicator */}
-              <div className="flex gap-1.5 px-2">
-                {sliderImages.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentSlide(index)}
-                    className={`rounded-full transition-all ${
-                      index === currentSlide
-                        ? "w-6 h-1.5 bg-gray-800"
-                        : "w-1.5 h-1.5 bg-gray-400 hover:bg-gray-600"
-                    }`}
-                  />
-                ))}
-              </div>
+              {sliderImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`container__slider__links-small ${
+                    index === currentSlide ? "container__slider__links-small-active" : ""
+                  }`}
+                />
+              ))}
 
               {/* Next Button */}
               <button
                 onClick={() => setCurrentSlide((prev) => (prev + 1) % sliderImages.length)}
-                className="w-8 h-8 rounded bg-white/80 hover:bg-white transition flex items-center justify-center shadow border border-gray-200"
+                className="slider__btn"
               >
-                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                ›
               </button>
 
               {/* Play/Pause Button */}
               <button
                 onClick={() => setIsSliderPaused(!isSliderPaused)}
-                className="w-8 h-8 rounded bg-white/80 hover:bg-white transition flex items-center justify-center shadow border border-gray-200 ml-1"
+                className="pause-button"
               >
-                {isSliderPaused ? (
-                  <svg className="w-3.5 h-3.5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                ) : (
-                  <svg className="w-3.5 h-3.5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                  </svg>
-                )}
+                {isSliderPaused ? "▶" : "⏸"}
               </button>
             </div>
           </div>
@@ -473,8 +453,8 @@ export default function Home() {
       )}
 
       {/* Products by Category */}
-      <section className="py-12">
-        <div className="max-w-6xl mx-auto px-4">
+      <section className="home-container">
+        <div className="categories-section">
           {filteredProductsByCategory.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-gray-500 text-lg mb-4">
@@ -490,20 +470,15 @@ export default function Home() {
               )}
             </div>
           ) : (
-            <div className="space-y-16">
+            <div>
               {filteredProductsByCategory.map(({ category, products: categoryProducts }) => (
-                <div key={category.id}>
+                <div key={category.id} className="category-block">
                   {/* Category Title */}
-                  <div className="mb-8 text-center">
-                    <h2 className="text-3xl font-bold text-gray-800 mb-2">{category.name}</h2>
-                    {category.description && (
-                      <p className="text-gray-600">{category.description}</p>
-                    )}
-                    <div className="h-1 w-24 bg-red-600 mt-3 mx-auto"></div>
-                  </div>
+                  <h2 className="category-title">{category.name}</h2>
 
                   {/* Products Grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  <div className="products-wrapper">
+                    <div className="products-list">
                   {categoryProducts.map((product) => {
                     const productImage = product.images && product.images.length > 0
                       ? product.images[0]
@@ -512,83 +487,38 @@ export default function Home() {
                     const hasDiscount = product.old_price && product.old_price > product.price;
 
                     return (
-                      <div
-                        key={product.id}
-                        className="bg-white rounded-lg overflow-hidden shadow hover:shadow-xl transition group"
-                      >
-                        {/* Image */}
-                        <Link href={`/products/${product.id}`}>
-                          <div className="relative h-48 bg-gray-100 overflow-hidden cursor-pointer">
+                      <div key={product.id} className="product-card">
+                        <Link href={`/products/${product.id}`} className="product-link">
+                          <div className="product-image-wrapper">
                             {productImage ? (
                               <img
                                 src={productImage}
                                 alt={product.title}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                className="product-image"
                               />
                             ) : (
                               <div className="flex items-center justify-center h-full text-gray-400">
                                 <span className="text-4xl">📦</span>
                               </div>
                             )}
-
-                            {product.stock === 0 && (
-                              <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                                <span className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold">
-                                  نفذت الكمية
-                                </span>
+                            {hasDiscount && (
+                              <div className="discount-badge">
+                                خصم {Math.round(((product.old_price! - product.price) / product.old_price!) * 100)}%
                               </div>
+                            )}
+                          </div>
+                          <h3 className="product-title">{product.title}</h3>
+                          <div className="price-section">
+                            <span className="price-new">{product.price.toFixed(2)} ج.م</span>
+                            {hasDiscount && (
+                              <span className="price-old">{product.old_price!.toFixed(2)}</span>
                             )}
                           </div>
                         </Link>
-
-                        {/* Info */}
-                        <div className="p-4">
-                          <Link href={`/products/${product.id}`}>
-                            <h3 className="font-bold text-base mb-3 line-clamp-2 hover:text-red-600 transition cursor-pointer min-h-[3rem]">
-                              {product.title}
-                            </h3>
-                          </Link>
-
-                          {/* Price */}
-                          <div className="mb-3">
-                            {hasDiscount ? (
-                              <div className="flex items-center gap-2">
-                                <span className="text-xl font-bold text-red-600">
-                                  {product.price.toFixed(2)} ج.م
-                                </span>
-                                <span className="text-sm text-gray-400 line-through">
-                                  {product.old_price!.toFixed(2)}
-                                </span>
-                              </div>
-                            ) : (
-                              <span className="text-xl font-bold text-gray-900">
-                                {product.price.toFixed(2)} ج.م
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Add to Cart */}
-                          <button
-                            onClick={() => handleAddToCart(product)}
-                            disabled={product.stock === 0}
-                            className={`w-full py-2 rounded-lg font-bold transition ${
-                              addedProducts.has(product.id)
-                                ? "bg-green-600 text-white"
-                                : product.stock === 0
-                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                : "bg-red-600 text-white hover:bg-red-700"
-                            }`}
-                          >
-                            {product.stock === 0
-                              ? "غير متوفر"
-                              : addedProducts.has(product.id)
-                              ? "✓ تمت الإضافة"
-                              : "أضف للسلة"}
-                          </button>
-                        </div>
                       </div>
                     );
                   })}
+                    </div>
                   </div>
                 </div>
               ))}
