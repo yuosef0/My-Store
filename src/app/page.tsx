@@ -390,7 +390,7 @@ export default function Home() {
       {/* Slider Section */}
       {sliderImages.length > 0 && (
         <section className="max-w-6xl mx-auto px-4 py-4">
-          <div className="relative overflow-hidden rounded-lg shadow-xl aspect-[5/2]">
+          <div className="relative overflow-hidden rounded-lg shadow-xl mx-auto" style={{ width: '300px', height: '300px' }}>
             {/* Slides */}
             <div className="relative w-full h-full">
               {sliderImages.map((image, index) => (
@@ -503,7 +503,8 @@ export default function Home() {
                   </div>
 
                   {/* Products Grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  <div className="flex justify-center">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
                   {categoryProducts.map((product) => {
                     const productImage = product.images && product.images.length > 0
                       ? product.images[0]
@@ -589,6 +590,7 @@ export default function Home() {
                       </div>
                     );
                   })}
+                    </div>
                   </div>
                 </div>
               ))}
