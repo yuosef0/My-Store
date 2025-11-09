@@ -466,12 +466,19 @@ export default function CartPage() {
                 )}
               </div>
 
+              <Link
+                href="/checkout"
+                className="block w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition text-center"
+              >
+                إتمام الطلب عبر Paymob 💳
+              </Link>
+
               <button
                 onClick={handleCheckout}
                 disabled={isProcessing}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 transition"
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 transition mt-3"
               >
-                {isProcessing ? "جارٍ التحويل للدفع..." : "متابعة للدفع 💳"}
+                {isProcessing ? "جارٍ التحويل للدفع..." : "الدفع عبر Stripe 💳"}
               </button>
 
               <Link
@@ -482,7 +489,7 @@ export default function CartPage() {
               </Link>
 
               <p className="text-xs text-gray-500 text-center mt-4">
-                الدفع الآمن عبر Stripe 🔒
+                الدفع الآمن 🔒
               </p>
             </div>
           </div>
