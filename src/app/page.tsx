@@ -503,7 +503,7 @@ export default function Home() {
                   </div>
 
                   {/* Products Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-fit mx-auto">
+                  <div className="flex flex-wrap justify-center gap-4">
                   {categoryProducts.map((product) => {
                     const productImage = product.images && product.images.length > 0
                       ? product.images[0]
@@ -514,7 +514,7 @@ export default function Home() {
                     return (
                       <div
                         key={product.id}
-                        className="bg-white rounded-lg overflow-hidden shadow hover:shadow-xl transition group"
+                        className="bg-white rounded-lg overflow-hidden shadow hover:shadow-xl transition group w-64"
                       >
                         {/* Image */}
                         <Link href={`/products/${product.id}`}>
