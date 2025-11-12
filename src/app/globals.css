@@ -10,6 +10,12 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Theme Colors - dynamically set by ThemeProvider */
+  --color-primary: #e60000;
+  --color-primary-hover: #cc0000;
+  --color-top-bar-bg: #e60000;
+  --color-button-text: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -469,4 +475,30 @@ body {
     width: 180px;
     font-size: 11px;
   }
+}
+
+/* Theme Utility Classes */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-button-text);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.bg-primary {
+  background-color: var(--color-primary) !important;
+}
+
+.bg-primary-hover:hover {
+  background-color: var(--color-primary-hover) !important;
+}
+
+.text-primary {
+  color: var(--color-primary) !important;
+}
+
+.border-primary {
+  border-color: var(--color-primary) !important;
 }

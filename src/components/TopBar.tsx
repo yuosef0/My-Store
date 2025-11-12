@@ -70,7 +70,7 @@ const TopBar = () => {
   }, [messages.length]);
 
   return (
-    <div className="bg-[#e60000] text-white text-base md:text-lg py-3 px-4 md:px-8 lg:px-16 overflow-hidden">
+    <div className="text-white text-base md:text-lg py-3 px-4 md:px-8 lg:px-16 overflow-hidden" style={{ backgroundColor: 'var(--color-top-bar-bg, #e60000)' }}>
       <div className="relative h-7">
         <div className="absolute inset-0 flex items-center justify-between">
           {/* Social Icons */}

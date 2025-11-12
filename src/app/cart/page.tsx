@@ -180,7 +180,10 @@ export default function CartPage() {
             </p>
             <Link
               href="/"
-              className="inline-flex items-center justify-center h-12 px-6 bg-[#e60000] text-white font-bold rounded-lg hover:bg-[#cc0000] transition-colors"
+              className="inline-flex items-center justify-center h-12 px-6 text-white font-bold rounded-lg transition-colors"
+              style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-button-text)' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-hover)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
             >
               تصفح المنتجات
             </Link>
@@ -271,7 +274,10 @@ export default function CartPage() {
                         <div className="flex items-center gap-2 text-[#333333] dark:text-[#f0f0f0] border border-[#e5e7eb] dark:border-[#4a4a4a] rounded-full p-1">
                           <button
                             onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
-                            className="text-lg font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full hover:bg-[#e60000]/10 cursor-pointer transition-colors"
+                            className="text-lg font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full cursor-pointer transition-colors"
+                            style={{ '--hover-bg': 'var(--color-primary)' } as any}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-primary) 10%, transparent)'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                           >
                             -
                           </button>
@@ -281,7 +287,9 @@ export default function CartPage() {
                           <button
                             onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
                             disabled={item.quantity >= item.stock}
-                            className="text-lg font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full hover:bg-[#e60000]/10 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="text-lg font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-primary) 10%, transparent)')}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                           >
                             +
                           </button>
@@ -490,7 +498,13 @@ export default function CartPage() {
                         <button
                           onClick={handleApplyCoupon}
                           disabled={couponValidating || !couponCode.trim()}
-                          className="px-5 py-2.5 rounded-lg bg-[#e60000]/20 text-[#e60000] hover:bg-[#e60000]/30 font-bold transition-colors disabled:opacity-50"
+                          className="px-5 py-2.5 rounded-lg font-bold transition-colors disabled:opacity-50"
+                          style={{
+                            backgroundColor: 'color-mix(in srgb, var(--color-primary) 20%, transparent)',
+                            color: 'var(--color-primary)'
+                          }}
+                          onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-primary) 30%, transparent)')}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-primary) 20%, transparent)'}
                         >
                           {couponValidating ? "..." : "تطبيق"}
                         </button>
@@ -524,7 +538,14 @@ export default function CartPage() {
                 <button
                   onClick={handleCheckout}
                   disabled={isProcessing}
-                  className="mt-8 w-full bg-[#e60000] text-white font-bold py-3 rounded-lg hover:bg-[#cc0000] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#e60000] dark:focus:ring-offset-[#230f0f] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="mt-8 w-full font-bold py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    backgroundColor: 'var(--color-primary)',
+                    color: 'var(--color-button-text)',
+                    '--tw-ring-color': 'var(--color-primary)'
+                  } as any}
+                  onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = 'var(--color-primary-hover)')}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
                 >
                   {isProcessing
                     ? "جارٍ التحويل للدفع..."

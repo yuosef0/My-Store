@@ -268,7 +268,7 @@ export default function ProductDetailPage() {
                       </svg>
                     </button>
                     {hasDiscount && (
-                      <span className="absolute top-4 left-4 bg-[#e60000] text-white text-sm font-bold px-3 py-1 rounded-full">
+                      <span className="absolute top-4 left-4 text-sm font-bold px-3 py-1 rounded-full" style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-button-text)' }}>
                         خصم {discountPercentage}%
                       </span>
                     )}
@@ -333,11 +333,25 @@ export default function ProductDetailPage() {
                           disabled={isOutOfStock}
                           className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
                             selectedSize === size
-                              ? "bg-[#e60000] text-white"
+                              ? ""
                               : isOutOfStock
                               ? "bg-[#f5f5f5]/50 dark:bg-[#281313]/50 text-[#666666] dark:text-[#aaaaaa] cursor-not-allowed line-through"
-                              : "bg-[#f5f5f5] dark:bg-[#281313] text-[#333333] dark:text-[#f0f0f0] hover:bg-[#e60000]/20"
+                              : "bg-[#f5f5f5] dark:bg-[#281313] text-[#333333] dark:text-[#f0f0f0]"
                           }`}
+                          style={selectedSize === size ? {
+                            backgroundColor: 'var(--color-primary)',
+                            color: 'var(--color-button-text)'
+                          } : {}}
+                          onMouseEnter={(e) => {
+                            if (!isOutOfStock && selectedSize !== size) {
+                              e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-primary) 20%, transparent)';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isOutOfStock && selectedSize !== size) {
+                              e.currentTarget.style.backgroundColor = '';
+                            }
+                          }}
                         >
                           {size}
                         </button>
@@ -409,7 +423,13 @@ export default function ProductDetailPage() {
                 <button
                   onClick={handleAddToCart}
                   disabled={product.stock === 0}
-                  className="flex-1 flex items-center justify-center gap-3 h-12 bg-[#e60000] text-white text-base font-bold rounded-lg hover:bg-[#cc0000] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="flex-1 flex items-center justify-center gap-3 h-12 text-base font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  style={{
+                    backgroundColor: 'var(--color-primary)',
+                    color: 'var(--color-button-text)'
+                  }}
+                  onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = 'var(--color-primary-hover)')}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
