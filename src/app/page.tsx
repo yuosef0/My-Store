@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useCart } from "../contexts/CartContext";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import Footer from "../components/Footer";
 
 interface Category {
@@ -56,6 +57,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { cart } = useCart();
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   // حالة السلايدر
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -66,6 +69,34 @@ export default function Home() {
 
   // حالة الفئة المختارة
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // قراءة الـ category من الـ URL
+  useEffect(() => {
+    const categorySlug = searchParams?.get("category");
+    if (categorySlug && categories.length > 0) {
+      // البحث عن الـ category بالـ slug
+      const category = categories.find((cat) => cat.slug === categorySlug);
+      if (category) {
+        setSelectedCategory(category.name);
+      }
+    } else if (!categorySlug) {
+      // لو مفيش category في الـ URL، عرض الكل
+      setSelectedCategory(null);
+    }
+  }, [searchParams, categories]);
+
+  // دالة اختيار الفئة
+  const handleCategoryClick = (categoryName: string | null, categorySlug: string | null) => {
+    if (!categorySlug) {
+      // عرض الكل
+      router.push("/");
+      setSelectedCategory(null);
+    } else {
+      // عرض فئة معينة
+      router.push(`/?category=${categorySlug}`);
+      setSelectedCategory(categoryName);
+    }
+  };
 
   // تغيير الصور تلقائياً كل 5 ثوانٍ
   useEffect(() => {
@@ -186,7 +217,7 @@ export default function Home() {
         <div className="md:hidden sticky top-0 z-30 bg-white dark:bg-[#2d1616] border-b border-[#e5e7eb] dark:border-[#4a4a4a] overflow-x-auto">
           <nav className="flex items-center gap-1 px-4 py-3">
             <button
-              onClick={() => setSelectedCategory(null)}
+              onClick={() => handleCategoryClick(null, null)}
               className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 selectedCategory === null
                   ? "bg-[#e60000] text-white"
@@ -195,46 +226,19 @@ export default function Home() {
             >
               الكل
             </button>
-            <button
-              onClick={() => setSelectedCategory("رجالي")}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedCategory === "رجالي"
-                  ? "bg-[#e60000] text-white"
-                  : "bg-[#f5f5f5] dark:bg-[#281313] text-[#333333] dark:text-[#f0f0f0]"
-              }`}
-            >
-              رجالي
-            </button>
-            <button
-              onClick={() => setSelectedCategory("حريمي")}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedCategory === "حريمي"
-                  ? "bg-[#e60000] text-white"
-                  : "bg-[#f5f5f5] dark:bg-[#281313] text-[#333333] dark:text-[#f0f0f0]"
-              }`}
-            >
-              حريمي
-            </button>
-            <button
-              onClick={() => setSelectedCategory("أطفال")}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedCategory === "أطفال"
-                  ? "bg-[#e60000] text-white"
-                  : "bg-[#f5f5f5] dark:bg-[#281313] text-[#333333] dark:text-[#f0f0f0]"
-              }`}
-            >
-              أطفال
-            </button>
-            <button
-              onClick={() => setSelectedCategory("أحذية")}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedCategory === "أحذية"
-                  ? "bg-[#e60000] text-white"
-                  : "bg-[#f5f5f5] dark:bg-[#281313] text-[#333333] dark:text-[#f0f0f0]"
-              }`}
-            >
-              أحذية
-            </button>
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => handleCategoryClick(category.name, category.slug)}
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  selectedCategory === category.name
+                    ? "bg-[#e60000] text-white"
+                    : "bg-[#f5f5f5] dark:bg-[#281313] text-[#333333] dark:text-[#f0f0f0]"
+                }`}
+              >
+                {category.name}
+              </button>
+            ))}
           </nav>
         </div>
 
