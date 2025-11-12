@@ -238,9 +238,13 @@ export default function Home() {
               onClick={() => handleCategoryClick(null, null)}
               className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 selectedCategory === null
-                  ? "bg-[#e60000] text-white"
+                  ? ""
                   : "bg-[#f5f5f5] dark:bg-[#281313] text-[#333333] dark:text-[#f0f0f0]"
               }`}
+              style={selectedCategory === null ? {
+                backgroundColor: 'var(--color-primary)',
+                color: 'var(--color-button-text)'
+              } : {}}
             >
               الكل
             </button>
@@ -250,9 +254,13 @@ export default function Home() {
                 onClick={() => handleCategoryClick(category.name, category.slug)}
                 className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   selectedCategory === category.name
-                    ? "bg-[#e60000] text-white"
+                    ? ""
                     : "bg-[#f5f5f5] dark:bg-[#281313] text-[#333333] dark:text-[#f0f0f0]"
                 }`}
+                style={selectedCategory === category.name ? {
+                  backgroundColor: 'var(--color-primary)',
+                  color: 'var(--color-button-text)'
+                } : {}}
               >
                 {category.name}
               </button>
@@ -310,7 +318,11 @@ export default function Home() {
                           </p>
                           <Link
                             href="/products"
-                            className="inline-flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-[#e60000] text-white text-base font-bold leading-normal tracking-wide hover:opacity-90 transition-opacity"
+                            className="inline-flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 text-base font-bold leading-normal tracking-wide hover:opacity-90 transition-opacity"
+                            style={{
+                              backgroundColor: 'var(--color-primary)',
+                              color: 'var(--color-button-text)'
+                            }}
                           >
                             <span className="truncate">تسوق الآن</span>
                           </Link>
@@ -406,7 +418,7 @@ export default function Home() {
                               </div>
                             )}
                             {hasDiscount && (
-                              <span className="absolute top-3 right-3 bg-[#e60000] text-white text-xs font-bold px-2 py-1 rounded z-10">
+                              <span className="absolute top-3 right-3 text-xs font-bold px-2 py-1 rounded z-10" style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-button-text)' }}>
                                 خصم {discountPercentage}%
                               </span>
                             )}

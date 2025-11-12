@@ -5,6 +5,7 @@ import "./globals.css";
 import { CartProvider } from "../contexts/CartContext";
 import { AuthProvider } from "../contexts/AuthContext";
 import { WishlistProvider } from "../contexts/WishlistContext";
+import { ThemeProvider } from "../contexts/ThemeContext";
 import ConditionalHeader from "../components/ConditionalHeader";
 
 const geistSans = Geist({
@@ -32,14 +33,16 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
-          <WishlistProvider>
-            <CartProvider>
-              <ConditionalHeader />
-              {children}
-            </CartProvider>
-          </WishlistProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <WishlistProvider>
+              <CartProvider>
+                <ConditionalHeader />
+                {children}
+              </CartProvider>
+            </WishlistProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
