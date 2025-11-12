@@ -50,9 +50,10 @@ export default function ProductDetailPage() {
     }
   }, [params.id]);
 
-  const fetchProduct = async (id: string) => {
+  const fetchProduct = async (slugOrId: string) => {
     try {
-      const { data, error } = await supabase
+      // محاولة البحث بالـ slug أولاً
+      let { data, error } = await supabase
         .from("products")
         .select(`
           *,
@@ -62,8 +63,27 @@ export default function ProductDetailPage() {
             slug
           )
         `)
-        .eq("id", id)
+        .eq("slug", slugOrId)
         .single();
+
+      // إذا لم يُعثر على المنتج بالـ slug، جرب بالـ id
+      if (error && error.code === "PGRST116") {
+        const result = await supabase
+          .from("products")
+          .select(`
+            *,
+            category:categories (
+              id,
+              name,
+              slug
+            )
+          `)
+          .eq("id", slugOrId)
+          .single();
+
+        data = result.data;
+        error = result.error;
+      }
 
       if (error) throw error;
       setProduct(data);
