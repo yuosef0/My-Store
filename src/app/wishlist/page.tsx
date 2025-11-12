@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import { useAuth } from "../../contexts/AuthContext";
 import { useWishlist } from "../../contexts/WishlistContext";
-import { useCart } from "../../contexts/CartContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Footer from "../../components/Footer";
@@ -28,7 +27,6 @@ export default function WishlistPage() {
   const { user } = useAuth();
   const router = useRouter();
   const { wishlist, removeFromWishlist, loading: wishlistLoading } = useWishlist();
-  const { addToCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -68,26 +66,13 @@ export default function WishlistPage() {
     }
   };
 
-  const handleRemoveFromWishlist = async (productId: string) => {
+  const handleRemoveFromWishlist = async (e: React.MouseEvent, productId: string) => {
+    e.preventDefault(); // منع الانتقال للصفحة عند الحذف
+    e.stopPropagation();
     const success = await removeFromWishlist(productId);
     if (success) {
       setProducts((prev) => prev.filter((p) => p.id !== productId));
     }
-  };
-
-  const handleAddToCart = (product: Product) => {
-    const selectedSize = product.sizes.length > 0 ? product.sizes[0] : undefined;
-    const selectedColor = product.colors.length > 0 ? product.colors[0].name : undefined;
-
-    addToCart({
-      id: product.id,
-      title: product.title,
-      price: product.price,
-      image_url: product.image_url || "",
-      quantity: 1,
-      size: selectedSize,
-      color: selectedColor,
-    });
   };
 
   if (!user) {
@@ -141,12 +126,13 @@ export default function WishlistPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {products.map((product) => (
-              <div
+              <Link
                 key={product.id}
-                className="bg-[#f5f5f5] dark:bg-[#2d1616] rounded-lg overflow-hidden border border-[#e5e7eb] dark:border-[#4a4a4a] hover:shadow-lg transition-shadow"
+                href={`/products/${product.slug}`}
+                className="bg-[#f5f5f5] dark:bg-[#2d1616] rounded-lg overflow-hidden border border-[#e5e7eb] dark:border-[#4a4a4a] hover:shadow-lg transition-all hover:scale-105 group"
               >
                 {/* Product Image */}
-                <Link href={`/products/${product.slug}`} className="block relative aspect-square">
+                <div className="relative aspect-square">
                   <img
                     src={product.image_url || "/placeholder.jpg"}
                     alt={product.title}
@@ -157,17 +143,31 @@ export default function WishlistPage() {
                       خصم {Math.round(((product.old_price - product.price) / product.old_price) * 100)}%
                     </div>
                   )}
-                </Link>
+                  {/* Remove Button */}
+                  <button
+                    onClick={(e) => handleRemoveFromWishlist(e, product.id)}
+                    className="absolute top-2 left-2 p-2 bg-white/90 dark:bg-[#1a1a1a]/90 rounded-full hover:bg-white dark:hover:bg-[#1a1a1a] border border-[#e5e7eb] dark:border-[#4a4a4a] hover:scale-110 transition-all z-10"
+                    title="إزالة من المفضلة"
+                  >
+                    <svg
+                      className="w-5 h-5 text-[#e60000]"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
 
                 {/* Product Info */}
                 <div className="p-4">
-                  <Link href={`/products/${product.slug}`}>
-                    <h3 className="font-medium text-lg mb-2 hover:text-[#e60000] transition-colors line-clamp-2">
-                      {product.title}
-                    </h3>
-                  </Link>
+                  <h3 className="font-medium text-lg mb-2 group-hover:text-[#e60000] transition-colors line-clamp-2">
+                    {product.title}
+                  </h3>
 
-                  <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center gap-2 mb-2">
                     <span className="text-2xl font-bold text-[#e60000]">
                       {product.price} ريال
                     </span>
@@ -179,35 +179,13 @@ export default function WishlistPage() {
                   </div>
 
                   {/* Stock Status */}
-                  {product.stock === 0 && (
-                    <p className="text-red-500 text-sm mb-3">نفذ من المخزون</p>
+                  {product.stock === 0 ? (
+                    <p className="text-red-500 text-sm">نفذ من المخزون</p>
+                  ) : (
+                    <p className="text-green-600 dark:text-green-400 text-sm">متوفر</p>
                   )}
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleAddToCart(product)}
-                      disabled={product.stock === 0}
-                      className="flex-1 px-4 py-2 bg-[#e60000] text-white rounded-lg hover:opacity-90 transition-opacity disabled:bg-gray-400 disabled:cursor-not-allowed text-sm font-medium"
-                    >
-                      {product.stock === 0 ? "غير متوفر" : "أضف للسلة"}
-                    </button>
-                    <button
-                      onClick={() => handleRemoveFromWishlist(product.id)}
-                      className="px-4 py-2 bg-white dark:bg-[#1a1a1a] border border-[#e5e7eb] dark:border-[#4a4a4a] rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                      title="إزالة من المفضلة"
-                    >
-                      <svg
-                        className="w-5 h-5 text-[#e60000]"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
-                      </svg>
-                    </button>
-                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
