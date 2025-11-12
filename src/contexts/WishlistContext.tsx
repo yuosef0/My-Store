@@ -64,7 +64,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   // إضافة منتج للمفضلة
   const addToWishlist = async (productId: string): Promise<boolean> => {
     if (!user) {
-      alert("يجب تسجيل الدخول أولاً لإضافة المنتجات للمفضلة");
+      console.log("يجب تسجيل الدخول أولاً لإضافة المنتجات للمفضلة");
       return false;
     }
 
