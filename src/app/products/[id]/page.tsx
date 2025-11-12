@@ -4,23 +4,36 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabaseClient";
 import { useCart } from "../../../contexts/CartContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import Link from "next/link";
+import TopBar from "../../../components/TopBar";
+import Footer from "../../../components/Footer";
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
 
 interface Product {
   id: string;
   title: string;
   description: string | null;
   price: number;
+  old_price?: number;
   images: string[];
   stock: number;
   sizes: string[];
   colors: { name: string; hex: string }[];
+  category_id: string;
+  category?: Category;
 }
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { addToCart } = useCart();
+  const { addToCart, cart } = useCart();
+  const { user } = useAuth();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,6 +42,8 @@ export default function ProductDetailPage() {
   const [selectedColor, setSelectedColor] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [message, setMessage] = useState("");
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -40,18 +55,19 @@ export default function ProductDetailPage() {
     try {
       const { data, error } = await supabase
         .from("products")
-        .select("*")
+        .select(`
+          *,
+          category:categories (
+            id,
+            name,
+            slug
+          )
+        `)
         .eq("id", id)
         .single();
 
       if (error) throw error;
       setProduct(data);
-      if (data.sizes && data.sizes.length > 0) {
-        setSelectedSize(data.sizes[0]);
-      }
-      if (data.colors && data.colors.length > 0) {
-        setSelectedColor(data.colors[0].name);
-      }
     } catch (error) {
       console.error("خطأ في جلب المنتج:", error);
     } finally {
@@ -63,12 +79,12 @@ export default function ProductDetailPage() {
     if (!product) return;
 
     if (!selectedSize && product.sizes && product.sizes.length > 0) {
-      setMessage("❌ من فضلك اختر المقاس");
+      setMessage("يرجى اختيار المقاس أولاً");
       return;
     }
 
     if (!selectedColor && product.colors && product.colors.length > 0) {
-      setMessage("❌ من فضلك اختر اللون");
+      setMessage("يرجى اختيار اللون أولاً");
       return;
     }
 
@@ -83,22 +99,18 @@ export default function ProductDetailPage() {
       color: selectedColor,
     });
 
-    setMessage(`✅ تمت الإضافة إلى السلة! (${quantity} قطعة${selectedSize ? ` - ${selectedSize}` : ''}${selectedColor ? ` - ${selectedColor}` : ''})`);
-
-    // إعادة تعيين الاختيارات لإتاحة إضافة نفس المنتج بمواصفات مختلفة
-    setSelectedSize("");
-    setSelectedColor("");
-    setQuantity(1);
-
-    setTimeout(() => setMessage(""), 4000);
+    setMessage("");
+    router.push("/cart");
   };
+
+  const cartItemsCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex justify-center items-center min-h-screen bg-[#f8f5f5] dark:bg-[#230f0f]">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-gray-600">جارٍ التحميل...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e60000] mx-auto mb-4"></div>
+          <p className="text-[#666666] dark:text-[#aaaaaa]">جاري تحميل المنتج...</p>
         </div>
       </div>
     );
@@ -106,10 +118,13 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex justify-center items-center min-h-screen bg-[#f8f5f5] dark:bg-[#230f0f]">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">المنتج غير موجود</h1>
-          <Link href="/" className="text-blue-600 hover:underline">
+          <h1 className="text-2xl font-bold text-[#333333] dark:text-[#f0f0f0] mb-4">المنتج غير موجود</h1>
+          <Link
+            href="/"
+            className="text-[#e60000] hover:underline font-medium"
+          >
             العودة للصفحة الرئيسية
           </Link>
         </div>
@@ -117,159 +132,311 @@ export default function ProductDetailPage() {
     );
   }
 
-  const images = product.images && product.images.length > 0 ? product.images : ["/placeholder.jpg"];
+  const images = product.images && product.images.length > 0 ? product.images : [];
+  const hasDiscount = product.old_price && product.old_price > product.price;
+  const discountPercentage = hasDiscount
+    ? Math.round(((product.old_price! - product.price) / product.old_price!) * 100)
+    : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link href="/" className="text-blue-600 hover:text-blue-700 font-medium">
-            ← العودة للمتجر
-          </Link>
+    <div className="relative flex w-full flex-col min-h-screen bg-[#f8f5f5] dark:bg-[#230f0f]">
+      {/* TopBar Component */}
+      <TopBar />
+
+      {/* Main Header */}
+      <header className="bg-white dark:bg-[#2d1616] sticky top-0 z-40 shadow-sm">
+        <div className="container mx-auto px-4 md:px-8 lg:px-16 py-4">
+          <div className="flex items-center justify-between">
+            {/* Left Side Icons */}
+            <div className="flex items-center gap-4 w-1/3">
+              <Link
+                href="/"
+                aria-label="Back to home"
+                className="flex items-center gap-2 text-[#666666] dark:text-[#aaaaaa] hover:text-[#e60000] dark:hover:text-[#e60000] transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span className="hidden md:inline text-sm font-medium">العودة للمتجر</span>
+              </Link>
+            </div>
+
+            {/* Logo - Center */}
+            <div className="w-1/3 text-center">
+              <Link href="/" className="text-2xl md:text-3xl font-bold tracking-tight">
+                متجري
+              </Link>
+            </div>
+
+            {/* Cart Icon - Right */}
+            <div className="flex items-center justify-end gap-4 w-1/3">
+              <Link
+                href="/cart"
+                aria-label="Shopping Cart"
+                className="relative flex items-center justify-center p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                {cartItemsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#e60000] text-white text-xs font-bold">
+                    {cartItemsCount}
+                  </span>
+                )}
+              </Link>
+            </div>
+          </div>
         </div>
       </header>
 
-      {/* Message */}
-      {message && (
-        <div className="max-w-7xl mx-auto px-4 pt-4">
-          <div
-            className={`p-3 rounded-lg text-sm ${
-              message.includes("✅")
-                ? "bg-green-50 text-green-800 border border-green-200"
-                : "bg-red-50 text-red-800 border border-red-200"
-            }`}
-          >
-            {message}
+      <main className="flex-grow">
+        <div className="container mx-auto px-4 md:px-8 lg:px-16 py-8">
+          {/* Breadcrumbs */}
+          <div className="flex flex-wrap gap-2 pb-4 text-sm">
+            <Link href="/" className="text-[#666666] dark:text-[#aaaaaa] hover:text-[#e60000] font-medium">
+              الرئيسية
+            </Link>
+            <span className="text-[#666666] dark:text-[#aaaaaa]">/</span>
+            {product.category && (
+              <>
+                <span className="text-[#666666] dark:text-[#aaaaaa] font-medium">
+                  {product.category.name}
+                </span>
+                <span className="text-[#666666] dark:text-[#aaaaaa]">/</span>
+              </>
+            )}
+            <span className="text-[#333333] dark:text-[#f0f0f0] font-medium truncate">
+              {product.title}
+            </span>
           </div>
-        </div>
-      )}
 
-      {/* Product Details */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="grid md:grid-cols-2 gap-8 p-6">
-            {/* Images */}
-            <div>
-              <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4">
-                <img
-                  src={images[selectedImage]}
-                  alt={product.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              {images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto">
-                  {images.map((img, idx) => (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+            {/* Right Side: Image Gallery */}
+            <div className="flex flex-col gap-4">
+              {images.length > 0 ? (
+                <>
+                  <div className="relative w-full aspect-square bg-white dark:bg-[#2d1616] rounded-xl overflow-hidden shadow-lg">
+                    <img
+                      src={images[selectedImage]}
+                      alt={product.title}
+                      className="w-full h-full object-cover"
+                    />
                     <button
-                      key={idx}
-                      onClick={() => setSelectedImage(idx)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 ${
-                        selectedImage === idx ? "border-blue-600" : "border-gray-200"
-                      }`}
+                      onClick={() => setIsZoomed(!isZoomed)}
+                      className="absolute top-4 right-4 bg-white/80 dark:bg-[#2d1616]/80 p-2 rounded-full hover:bg-white dark:hover:bg-[#2d1616] transition-colors"
                     >
-                      <img src={img} alt={`صورة ${idx + 1}`} className="w-full h-full object-cover" />
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                      </svg>
                     </button>
-                  ))}
+                    {hasDiscount && (
+                      <span className="absolute top-4 left-4 bg-[#e60000] text-white text-sm font-bold px-3 py-1 rounded-full">
+                        خصم {discountPercentage}%
+                      </span>
+                    )}
+                  </div>
+                  {images.length > 1 && (
+                    <div className="grid grid-cols-4 gap-3">
+                      {images.map((img, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setSelectedImage(idx)}
+                          className={`w-full aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                            selectedImage === idx
+                              ? "border-[#e60000] ring-2 ring-[#e60000]/30"
+                              : "border-[#e5e7eb] dark:border-[#4a4a4a] opacity-60 hover:opacity-100"
+                          }`}
+                        >
+                          <img
+                            src={img}
+                            alt={`صورة ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="w-full aspect-square bg-[#f5f5f5] dark:bg-[#281313] rounded-xl flex items-center justify-center">
+                  <span className="text-6xl">📦</span>
                 </div>
               )}
             </div>
 
-            {/* Info */}
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.title}</h1>
-              <p className="text-3xl font-bold text-blue-600 mb-6">{product.price.toFixed(2)} ج.م</p>
+            {/* Left Side: Product Details */}
+            <div className="flex flex-col gap-6">
+              {/* Product Title */}
+              <h1 className="text-3xl md:text-4xl font-black leading-tight tracking-tight text-[#333333] dark:text-[#f0f0f0]">
+                {product.title}
+              </h1>
 
-              {product.description && (
-                <div className="mb-6">
-                  <h3 className="font-medium text-gray-900 mb-2">الوصف:</h3>
-                  <p className="text-gray-600">{product.description}</p>
-                </div>
-              )}
+              {/* Price */}
+              <div className="flex items-baseline gap-3">
+                <p className="text-[#e60000] text-3xl font-bold">{product.price.toFixed(2)} ريال</p>
+                {hasDiscount && (
+                  <p className="text-[#666666] dark:text-[#aaaaaa] text-xl line-through">
+                    {product.old_price!.toFixed(2)} ريال
+                  </p>
+                )}
+              </div>
 
-              {/* Sizes */}
+              {/* Size Selector */}
               {product.sizes && product.sizes.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="font-medium text-gray-900 mb-2">المقاس:</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {product.sizes.map((size) => (
-                      <button
-                        key={size}
-                        onClick={() => setSelectedSize(size)}
-                        className={`px-4 py-2 border-2 rounded-lg font-medium transition ${
-                          selectedSize === size
-                            ? "border-blue-600 bg-blue-50 text-blue-600"
-                            : "border-gray-300 hover:border-gray-400"
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    ))}
+                <div className="flex flex-col gap-3">
+                  <h2 className="text-lg font-bold text-[#333333] dark:text-[#f0f0f0]">المقاس:</h2>
+                  <div className="flex flex-wrap gap-3">
+                    {product.sizes.map((size) => {
+                      const isOutOfStock = false; // يمكن إضافة منطق للتحقق من المخزون حسب المقاس
+                      return (
+                        <button
+                          key={size}
+                          onClick={() => !isOutOfStock && setSelectedSize(size)}
+                          disabled={isOutOfStock}
+                          className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                            selectedSize === size
+                              ? "bg-[#e60000] text-white"
+                              : isOutOfStock
+                              ? "bg-[#f5f5f5]/50 dark:bg-[#281313]/50 text-[#666666] dark:text-[#aaaaaa] cursor-not-allowed line-through"
+                              : "bg-[#f5f5f5] dark:bg-[#281313] text-[#333333] dark:text-[#f0f0f0] hover:bg-[#e60000]/20"
+                          }`}
+                        >
+                          {size}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
 
-              {/* Colors */}
+              {/* Color Selector */}
               {product.colors && product.colors.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="font-medium text-gray-900 mb-2">اللون:</h3>
-                  <div className="flex flex-wrap gap-2">
+                <div className="flex flex-col gap-3">
+                  <h2 className="text-lg font-bold text-[#333333] dark:text-[#f0f0f0]">
+                    اللون:{" "}
+                    <span className="font-normal text-[#666666] dark:text-[#aaaaaa]">
+                      {selectedColor || "اختر لون"}
+                    </span>
+                  </h2>
+                  <div className="flex flex-wrap gap-3">
                     {product.colors.map((color) => (
                       <button
                         key={color.name}
                         onClick={() => setSelectedColor(color.name)}
-                        className={`px-4 py-2 border-2 rounded-lg font-medium transition flex items-center gap-2 ${
+                        className={`size-10 rounded-full border-2 transition-all ${
                           selectedColor === color.name
-                            ? "border-blue-600 bg-blue-50"
-                            : "border-gray-300 hover:border-gray-400"
+                            ? "ring-2 ring-offset-2 ring-offset-[#f8f5f5] dark:ring-offset-[#230f0f] ring-[#e60000] border-[#e60000]"
+                            : "border-[#e5e7eb] dark:border-[#4a4a4a] hover:border-[#e60000]"
                         }`}
-                      >
-                        <span
-                          className="w-5 h-5 rounded-full border border-gray-300"
-                          style={{ backgroundColor: color.hex }}
-                        ></span>
-                        {color.name}
-                      </button>
+                        style={{ backgroundColor: color.hex }}
+                        title={color.name}
+                      />
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Quantity */}
-              <div className="mb-6">
-                <h3 className="font-medium text-gray-900 mb-2">الكمية:</h3>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-10 h-10 border border-gray-300 rounded-lg hover:bg-gray-50"
-                  >
-                    −
-                  </button>
-                  <span className="text-lg font-medium w-12 text-center">{quantity}</span>
-                  <button
-                    onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                    className="w-10 h-10 border border-gray-300 rounded-lg hover:bg-gray-50"
-                  >
-                    +
-                  </button>
-                  <span className="text-sm text-gray-500">
+              {/* Quantity Selector */}
+              <div className="flex flex-col gap-3">
+                <h2 className="text-lg font-bold text-[#333333] dark:text-[#f0f0f0]">الكمية:</h2>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center border border-[#e5e7eb] dark:border-[#4a4a4a] rounded-lg">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="px-4 py-2 text-[#666666] dark:text-[#aaaaaa] hover:text-[#e60000] text-xl font-bold transition-colors"
+                    >
+                      -
+                    </button>
+                    <input
+                      type="text"
+                      value={quantity}
+                      readOnly
+                      className="w-12 text-center border-x border-[#e5e7eb] dark:border-[#4a4a4a] bg-transparent text-[#333333] dark:text-[#f0f0f0] focus:ring-0 focus:outline-none"
+                    />
+                    <button
+                      onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                      className="px-4 py-2 text-[#666666] dark:text-[#aaaaaa] hover:text-[#e60000] text-xl font-bold transition-colors"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <span className="text-sm text-[#666666] dark:text-[#aaaaaa]">
                     ({product.stock} متوفر)
                   </span>
                 </div>
               </div>
 
-              {/* Add to Cart */}
-              <button
-                onClick={handleAddToCart}
-                disabled={product.stock === 0}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-              >
-                {product.stock === 0 ? "غير متوفر" : "🛒 إضافة إلى السلة"}
-              </button>
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <button
+                  onClick={handleAddToCart}
+                  disabled={product.stock === 0}
+                  className="flex-1 flex items-center justify-center gap-3 h-12 bg-[#e60000] text-white text-base font-bold rounded-lg hover:bg-[#cc0000] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <span>{product.stock === 0 ? "غير متوفر" : "إضافة إلى السلة"}</span>
+                </button>
+                <Link
+                  href="/"
+                  className="flex-1 flex items-center justify-center gap-3 h-12 bg-[#f5f5f5] dark:bg-[#281313] text-[#333333] dark:text-[#f0f0f0] text-base font-bold rounded-lg hover:bg-[#e5e7eb] dark:hover:bg-[#3a1f1f] transition-colors"
+                >
+                  <span>العودة للمتجر</span>
+                </Link>
+              </div>
+
+              {/* Error Message */}
+              {message && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-[#dc3545]/10 text-[#dc3545] border border-[#dc3545]/20">
+                  <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="text-sm font-medium">{message}</p>
+                </div>
+              )}
+
+              {/* Description Section */}
+              <div className="border-t border-[#e5e7eb] dark:border-[#4a4a4a] pt-6 mt-2">
+                <div className="flex flex-col">
+                  <details className="border-b border-[#e5e7eb] dark:border-[#4a4a4a] py-4 group" open>
+                    <summary className="flex justify-between items-center cursor-pointer list-none">
+                      <h3 className="font-bold text-[#333333] dark:text-[#f0f0f0]">الوصف</h3>
+                      <svg className="w-5 h-5 transition-transform duration-300 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </summary>
+                    <div className="mt-4 text-[#666666] dark:text-[#aaaaaa] leading-relaxed">
+                      {product.description || "لا يوجد وصف متاح لهذا المنتج."}
+                    </div>
+                  </details>
+
+                  <details className="border-b border-[#e5e7eb] dark:border-[#4a4a4a] py-4 group">
+                    <summary className="flex justify-between items-center cursor-pointer list-none">
+                      <h3 className="font-bold text-[#333333] dark:text-[#f0f0f0]">تفاصيل المنتج</h3>
+                      <svg className="w-5 h-5 transition-transform duration-300 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </summary>
+                    <ul className="mt-4 mr-5 list-disc text-[#666666] dark:text-[#aaaaaa] space-y-2">
+                      <li>المخزون المتاح: {product.stock} قطعة</li>
+                      {product.sizes && product.sizes.length > 0 && (
+                        <li>المقاسات المتوفرة: {product.sizes.join(", ")}</li>
+                      )}
+                      {product.colors && product.colors.length > 0 && (
+                        <li>الألوان المتوفرة: {product.colors.map(c => c.name).join(", ")}</li>
+                      )}
+                    </ul>
+                  </details>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
