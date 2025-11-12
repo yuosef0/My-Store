@@ -19,40 +19,103 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // استخدام الـ Function المخصصة من Supabase
-    const { data, error } = await supabase
-      .rpc('is_coupon_valid', {
-        coupon_code_input: code.toUpperCase(),
-        order_total: parseFloat(total)
-      });
+    const orderTotal = parseFloat(total);
 
-    if (error) {
-      console.error('خطأ في التحقق من الكوبون:', error);
-      return NextResponse.json(
-        { error: 'حدث خطأ في التحقق من الكوبون' },
-        { status: 500 }
-      );
-    }
+    // البحث عن الكوبون في قاعدة البيانات
+    const { data: coupon, error } = await supabase
+      .from('coupons')
+      .select('*')
+      .eq('code', code.toUpperCase())
+      .single();
 
-    // البيانات المرجعة من Function
-    const result = data[0];
-
-    if (!result.is_valid) {
+    if (error || !coupon) {
       return NextResponse.json(
         {
           valid: false,
-          message: result.message,
+          message: 'كود الكوبون غير صحيح',
           discount: 0
         },
         { status: 200 }
       );
     }
 
+    // التحقق من أن الكوبون نشط
+    if (!coupon.is_active) {
+      return NextResponse.json(
+        {
+          valid: false,
+          message: 'هذا الكوبون غير نشط',
+          discount: 0
+        },
+        { status: 200 }
+      );
+    }
+
+    // التحقق من تاريخ الصلاحية
+    if (coupon.valid_until && new Date(coupon.valid_until) < new Date()) {
+      return NextResponse.json(
+        {
+          valid: false,
+          message: 'هذا الكوبون منتهي الصلاحية',
+          discount: 0
+        },
+        { status: 200 }
+      );
+    }
+
+    // التحقق من عدد مرات الاستخدام
+    if (coupon.usage_limit && coupon.used_count >= coupon.usage_limit) {
+      return NextResponse.json(
+        {
+          valid: false,
+          message: 'تم استخدام هذا الكوبون بالكامل',
+          discount: 0
+        },
+        { status: 200 }
+      );
+    }
+
+    // التحقق من الحد الأدنى للشراء
+    if (orderTotal < coupon.min_purchase_amount) {
+      return NextResponse.json(
+        {
+          valid: false,
+          message: `الحد الأدنى للشراء ${coupon.min_purchase_amount} ريال`,
+          discount: 0
+        },
+        { status: 200 }
+      );
+    }
+
+    // حساب الخصم
+    let discountAmount = 0;
+
+    if (coupon.discount_type === 'percentage') {
+      discountAmount = (orderTotal * coupon.discount_value) / 100;
+
+      // التحقق من الحد الأقصى للخصم
+      if (coupon.max_discount_amount && discountAmount > coupon.max_discount_amount) {
+        discountAmount = coupon.max_discount_amount;
+      }
+    } else {
+      // fixed discount
+      discountAmount = coupon.discount_value;
+    }
+
+    // التأكد من أن الخصم لا يتجاوز المبلغ الإجمالي
+    if (discountAmount > orderTotal) {
+      discountAmount = orderTotal;
+    }
+
+    const finalTotal = orderTotal - discountAmount;
+
     return NextResponse.json({
       valid: true,
-      message: result.message,
-      discount: result.discount_amount,
-      final_total: parseFloat(total) - result.discount_amount
+      message: 'تم تطبيق الكوبون بنجاح',
+      discount: discountAmount,
+      final_total: finalTotal,
+      coupon_id: coupon.id,
+      coupon_code: coupon.code
     });
 
   } catch (error: any) {
