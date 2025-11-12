@@ -6,6 +6,7 @@ import { supabase } from "../lib/supabaseClient";
 import { useCart } from "../contexts/CartContext";
 import Link from "next/link";
 import { useAuth } from "../contexts/AuthContext";
+import TopBar from "../components/TopBar";
 
 interface Category {
   id: string;
@@ -203,278 +204,184 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      {/* Top Bar - الجزء الأول من الهيدر */}
-      <div className="bg-red-600 text-white py-2">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-center gap-8">
-            {/* Social Media Icons - اليسار */}
-            <div className="flex items-center gap-3">
-              <a href="https://facebook.com" target="_blank" className="hover:opacity-80 transition">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
-              </a>
-              <a href="https://instagram.com" target="_blank" className="hover:opacity-80 transition">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                </svg>
-              </a>
-              <a href="https://twitter.com" target="_blank" className="hover:opacity-80 transition">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-                </svg>
-              </a>
-            </div>
+      {/* TopBar Component */}
+      <TopBar />
 
-            {/* Rotating Message - الوسط */}
-            <div className="text-sm font-medium">
-              <span className="inline-block animate-pulse">
-                &lt; {rotatingMessages[messageIndex]} &gt;
+      {/* Main Header */}
+      <header className="header">
+        <div className="header-top">
+          {/* Search Icon - Left */}
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="header-icon"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </button>
+
+          {/* Logo - Center */}
+          <Link href="/" className="text-2xl font-black text-red-600">
+            متجري
+          </Link>
+
+          {/* Cart Icon - Right */}
+          <Link href="/cart" className="relative header-icon">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            {cartItemsCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {cartItemsCount}
               </span>
-            </div>
-
-            {/* Phone Number - اليمين */}
-            <div className="text-sm">
-              📞 01234567890
-            </div>
-          </div>
+            )}
+          </Link>
         </div>
-      </div>
 
-      {/* Main Header - الجزء الثاني من الهيدر */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="grid grid-cols-3 items-start gap-4">
-            {/* Right Side - User & Cart */}
-            <div className="flex items-center gap-4 justify-start">
-              {user ? (
-                <div className="relative">
-                  <button
-                    onClick={() => setShowUserDropdown(!showUserDropdown)}
-                    className="flex items-center gap-2 hover:text-red-600 transition"
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  </button>
-
-                  {showUserDropdown && (
-                    <>
-                      <div
-                        className="fixed inset-0 z-10"
-                        onClick={() => setShowUserDropdown(false)}
-                      />
-                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border z-20">
-                        <div className="p-4 border-b">
-                          <p className="font-medium text-gray-900 truncate">{user.email}</p>
-                        </div>
-                        <div className="py-2">
-                          <Link
-                            href="/profile"
-                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition"
-                            onClick={() => setShowUserDropdown(false)}
-                          >
-                            📝 حسابي
-                          </Link>
-                          <Link
-                            href="/orders"
-                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition"
-                            onClick={() => setShowUserDropdown(false)}
-                          >
-                            📦 طلباتي
-                          </Link>
-                          {isAdmin && (
-                            <Link
-                              href="/admin"
-                              className="block px-4 py-2 text-blue-600 hover:bg-blue-50 transition font-medium"
-                              onClick={() => setShowUserDropdown(false)}
-                            >
-                              ⚙️ لوحة التحكم
-                            </Link>
-                          )}
-                        </div>
-                        <div className="border-t py-2">
-                          <button
-                            onClick={() => {
-                              signOut();
-                              setShowUserDropdown(false);
-                            }}
-                            className="block w-full text-right px-4 py-2 text-red-600 hover:bg-red-50 transition"
-                          >
-                            🚪 تسجيل الخروج
-                          </button>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <Link href="/login" className="flex items-center gap-2 hover:text-red-600 transition">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                  </svg>
-                </Link>
-              )}
-
-              <Link href="/cart" className="relative flex items-center gap-2 hover:text-red-600 transition">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                {cartItemsCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartItemsCount}
-                  </span>
-                )}
-              </Link>
-            </div>
-
-            {/* Center - Logo & Navigation */}
-            <div className="flex flex-col items-center gap-4">
-              <Link href="/" className="text-3xl font-black text-red-600">
-                متجري
-              </Link>
-
-              <nav className="flex items-center gap-6">
-                <Link href="/" className="text-gray-700 hover:text-red-600 transition font-medium">
-                  الرئيسية
-                </Link>
-                <Link href="/products" className="text-gray-700 hover:text-red-600 transition font-medium">
-                  المنتجات
-                </Link>
-                <Link href="/about" className="text-gray-700 hover:text-red-600 transition font-medium">
-                  من نحن
-                </Link>
-                <Link href="/contact" className="text-gray-700 hover:text-red-600 transition font-medium">
-                  اتصل بنا
-                </Link>
-              </nav>
-            </div>
-
-            {/* Left Side - Search */}
-            <div className="flex items-center justify-end">
-              {searchOpen ? (
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="ابحث عن منتج..."
-                    className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-600 w-64"
-                    autoFocus
+        {/* Navigation Links */}
+        <div className="header-links">
+          {user ? (
+            <div className="relative inline-block">
+              <button
+                onClick={() => setShowUserDropdown(!showUserDropdown)}
+                className="hover:text-red-600 transition"
+              >
+                {user.email}
+              </button>
+              {showUserDropdown && (
+                <>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setShowUserDropdown(false)}
                   />
-                  <button
-                    onClick={() => {
-                      setSearchOpen(false);
-                      setSearchQuery("");
-                    }}
-                    className="text-gray-600 hover:text-red-600"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setSearchOpen(true)}
-                  className="flex items-center gap-2 hover:text-red-600 transition"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </button>
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border z-20">
+                    <div className="py-2">
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition"
+                        onClick={() => setShowUserDropdown(false)}
+                      >
+                        📝 حسابي
+                      </Link>
+                      <Link
+                        href="/orders"
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition"
+                        onClick={() => setShowUserDropdown(false)}
+                      >
+                        📦 طلباتي
+                      </Link>
+                      {isAdmin && (
+                        <Link
+                          href="/admin"
+                          className="block px-4 py-2 text-blue-600 hover:bg-blue-50 transition font-medium"
+                          onClick={() => setShowUserDropdown(false)}
+                        >
+                          ⚙️ لوحة التحكم
+                        </Link>
+                      )}
+                    </div>
+                    <div className="border-t py-2">
+                      <button
+                        onClick={() => {
+                          signOut();
+                          setShowUserDropdown(false);
+                        }}
+                        className="block w-full text-right px-4 py-2 text-red-600 hover:bg-red-50 transition"
+                      >
+                        🚪 تسجيل الخروج
+                      </button>
+                    </div>
+                  </div>
+                </>
               )}
             </div>
-          </div>
+          ) : (
+            <Link href="/login">تسجيل الدخول</Link>
+          )}
+          <Link href="/">رجالي</Link>
+          <Link href="/">حريمي</Link>
+          <Link href="/">أطفال</Link>
+          <Link href="/">أحذية</Link>
         </div>
       </header>
 
-      {/* Slider Section */}
-      {sliderImages.length > 0 && (
-        <section className="max-w-6xl mx-auto px-4 py-6">
-          <div className="relative overflow-hidden rounded-lg shadow-xl mx-auto" style={{ width: '600px', height: '400px', maxWidth: '100%' }}>
-            {/* Slides */}
-            <div className="relative w-full h-full">
-              {sliderImages.map((image, index) => (
-                <div
-                  key={image.id}
-                  className={`absolute inset-0 transition-opacity duration-1000 ${
-                    index === currentSlide ? "opacity-100" : "opacity-0"
-                  }`}
-                >
-                  {/* Full Width Image */}
-                  <div className="relative w-full h-full bg-gray-200">
-                    <img
-                      src={image.image_url}
-                      alt={image.title || `Slide ${index + 1}`}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400'%3E%3Crect fill='%23ddd' width='800' height='400'/%3E%3Ctext fill='%23999' font-family='sans-serif' font-size='40' dy='10.5' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3E" + (image.title || "صورة السلايدر") + "%3C/text%3E%3C/svg%3E";
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Navigation Arrows & Controls */}
-            <div className="absolute inset-x-0 bottom-3 flex items-center justify-center gap-2">
-              {/* Previous Button */}
+      {/* Search Modal */}
+      {searchOpen && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-start justify-center pt-20">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4">
+            <div className="flex items-center gap-2 mb-4">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="ابحث عن منتج..."
+                className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-600"
+                autoFocus
+              />
               <button
-                onClick={() => setCurrentSlide((prev) => (prev === 0 ? sliderImages.length - 1 : prev - 1))}
-                className="w-8 h-8 rounded bg-white/80 hover:bg-white transition flex items-center justify-center shadow border border-gray-200"
+                onClick={() => {
+                  setSearchOpen(false);
+                  setSearchQuery("");
+                }}
+                className="text-gray-600 hover:text-red-600 text-2xl"
               >
-                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-
-              {/* Dots Indicator */}
-              <div className="flex gap-1.5 px-2">
-                {sliderImages.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentSlide(index)}
-                    className={`rounded-full transition-all ${
-                      index === currentSlide
-                        ? "w-6 h-1.5 bg-gray-800"
-                        : "w-1.5 h-1.5 bg-gray-400 hover:bg-gray-600"
-                    }`}
-                  />
-                ))}
-              </div>
-
-              {/* Next Button */}
-              <button
-                onClick={() => setCurrentSlide((prev) => (prev + 1) % sliderImages.length)}
-                className="w-8 h-8 rounded bg-white/80 hover:bg-white transition flex items-center justify-center shadow border border-gray-200"
-              >
-                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-
-              {/* Play/Pause Button */}
-              <button
-                onClick={() => setIsSliderPaused(!isSliderPaused)}
-                className="w-8 h-8 rounded bg-white/80 hover:bg-white transition flex items-center justify-center shadow border border-gray-200 ml-1"
-              >
-                {isSliderPaused ? (
-                  <svg className="w-3.5 h-3.5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                ) : (
-                  <svg className="w-3.5 h-3.5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                  </svg>
-                )}
+                ✕
               </button>
             </div>
           </div>
-        </section>
+        </div>
+      )}
+
+      {/* Slider Section */}
+      {sliderImages.length > 0 && (
+        <div className="container__slider">
+          {sliderImages.map((image, index) => (
+            <div
+              key={image.id}
+              className={`slider__item slider__item-active-${currentSlide + 1}`}
+            >
+              <img
+                src={image.image_url}
+                alt={image.title || `Slide ${index + 1}`}
+                onError={(e) => {
+                  e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400'%3E%3Crect fill='%23ddd' width='800' height='400'/%3E%3Ctext fill='%23999' font-family='sans-serif' font-size='40' dy='10.5' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3E" + (image.title || "صورة السلايدر") + "%3C/text%3E%3C/svg%3E";
+                }}
+              />
+            </div>
+          ))}
+
+          {/* Controls */}
+          <div className="controls">
+            <button className="slider__btn" onClick={() => setCurrentSlide((prev) => (prev === 0 ? sliderImages.length - 1 : prev - 1))}>
+              &lt;
+            </button>
+
+            {sliderImages.map((_, index) => (
+              <button
+                key={index}
+                className={
+                  currentSlide === index
+                    ? "container__slider__links-small container__slider__links-small-active"
+                    : "container__slider__links-small"
+                }
+                onClick={() => setCurrentSlide(index)}
+              ></button>
+            ))}
+
+            <button className="slider__btn" onClick={() => setCurrentSlide((prev) => (prev + 1) % sliderImages.length)}>
+              &gt;
+            </button>
+
+            <button className="pause-button" onClick={() => setIsSliderPaused(!isSliderPaused)}>
+              {isSliderPaused ? "▶" : "⏸"}
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Products by Category */}
-      <section className="py-12">
-        <div className="max-w-4xl mx-auto px-4">
+      <div className="home-container">
+        <div className="categories-section">
           {filteredProductsByCategory.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-gray-500 text-lg mb-4">
@@ -490,112 +397,75 @@ export default function Home() {
               )}
             </div>
           ) : (
-            <div className="space-y-16">
+            <>
               {filteredProductsByCategory.map(({ category, products: categoryProducts }) => (
-                <div key={category.id}>
+                <div key={category.id} className="category-block">
                   {/* Category Title */}
-                  <div className="mb-8 text-center">
-                    <h2 className="text-3xl font-bold text-gray-800 mb-2">{category.name}</h2>
-                    {category.description && (
-                      <p className="text-gray-600">{category.description}</p>
-                    )}
-                    <div className="h-1 w-24 bg-red-600 mt-3 mx-auto"></div>
-                  </div>
+                  <h2 className="category-title">{category.name}</h2>
 
-                  {/* Products Grid */}
-                  <div className="flex flex-wrap justify-center gap-4">
-                  {categoryProducts.map((product) => {
-                    const productImage = product.images && product.images.length > 0
-                      ? product.images[0]
-                      : product.image_url || null;
+                  {/* Products List */}
+                  <div className="products-wrapper">
+                    <div className="products-list">
+                      {categoryProducts.map((product) => {
+                        const productImage = product.images && product.images.length > 0
+                          ? product.images[0]
+                          : product.image_url || null;
 
-                    const hasDiscount = product.old_price && product.old_price > product.price;
+                        const hasDiscount = product.old_price && product.old_price > product.price;
+                        const discountPercentage = hasDiscount
+                          ? Math.round(((product.old_price! - product.price) / product.old_price!) * 100)
+                          : 0;
 
-                    return (
-                      <div
-                        key={product.id}
-                        className="bg-white rounded-lg overflow-hidden shadow hover:shadow-xl transition group w-64"
-                      >
-                        {/* Image */}
-                        <Link href={`/products/${product.id}`}>
-                          <div className="relative h-48 bg-gray-100 overflow-hidden cursor-pointer">
-                            {productImage ? (
-                              <img
-                                src={productImage}
-                                alt={product.title}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                              />
-                            ) : (
-                              <div className="flex items-center justify-center h-full text-gray-400">
-                                <span className="text-4xl">📦</span>
+                        return (
+                          <div key={product.id} className="product-card">
+                            <Link href={`/products/${product.id}`} className="product-link">
+                              <div className="product-image-wrapper">
+                                {productImage ? (
+                                  <img
+                                    src={productImage}
+                                    alt={product.title}
+                                    className="product-image"
+                                  />
+                                ) : (
+                                  <div className="flex items-center justify-center h-full text-gray-400">
+                                    <span className="text-4xl">📦</span>
+                                  </div>
+                                )}
                               </div>
-                            )}
 
-                            {product.stock === 0 && (
-                              <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                                <span className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold">
-                                  نفذت الكمية
-                                </span>
+                              {hasDiscount && (
+                                <span className="discount-badge">-{discountPercentage}%</span>
+                              )}
+
+                              <h3 className="product-title">{product.title}</h3>
+
+                              <div className="price-section">
+                                <span className="price-new">{product.price.toFixed(2)} ج.م</span>
+                                {hasDiscount && (
+                                  <span className="price-old">{product.old_price!.toFixed(2)}</span>
+                                )}
                               </div>
-                            )}
+                            </Link>
+
+                            {/* زر أضف للسلة مخفي بـ CSS */}
+                            <button
+                              onClick={() => handleAddToCart(product)}
+                              disabled={product.stock === 0}
+                              className="add-to-cart-button"
+                            >
+                              {product.stock === 0 ? "غير متوفر" : "أضف للسلة"}
+                            </button>
                           </div>
-                        </Link>
-
-                        {/* Info */}
-                        <div className="p-4">
-                          <Link href={`/products/${product.id}`}>
-                            <h3 className="font-bold text-base mb-3 line-clamp-2 hover:text-red-600 transition cursor-pointer min-h-[3rem]">
-                              {product.title}
-                            </h3>
-                          </Link>
-
-                          {/* Price */}
-                          <div className="mb-3">
-                            {hasDiscount ? (
-                              <div className="flex items-center gap-2">
-                                <span className="text-xl font-bold text-red-600">
-                                  {product.price.toFixed(2)} ج.م
-                                </span>
-                                <span className="text-sm text-gray-400 line-through">
-                                  {product.old_price!.toFixed(2)}
-                                </span>
-                              </div>
-                            ) : (
-                              <span className="text-xl font-bold text-gray-900">
-                                {product.price.toFixed(2)} ج.م
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Add to Cart */}
-                          <button
-                            onClick={() => handleAddToCart(product)}
-                            disabled={product.stock === 0}
-                            className={`w-full py-2 rounded-lg font-bold transition ${
-                              addedProducts.has(product.id)
-                                ? "bg-green-600 text-white"
-                                : product.stock === 0
-                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                : "bg-red-600 text-white hover:bg-red-700"
-                            }`}
-                          >
-                            {product.stock === 0
-                              ? "غير متوفر"
-                              : addedProducts.has(product.id)
-                              ? "✓ تمت الإضافة"
-                              : "أضف للسلة"}
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               ))}
-            </div>
+            </>
           )}
         </div>
-      </section>
+      </div>
     </main>
   );
 }
