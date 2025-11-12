@@ -1,8 +1,74 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { supabase } from "../lib/supabaseClient";
+
+interface TopBarMessage {
+  id: string;
+  message: string;
+  is_active: boolean;
+  display_order: number;
+}
 
 const TopBar = () => {
+  const [messages, setMessages] = useState<TopBarMessage[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // جلب الرسائل من قاعدة البيانات
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("top_bar_messages")
+          .select("*")
+          .eq("is_active", true)
+          .order("display_order");
+
+        if (error) {
+          console.error("Error fetching top bar messages:", error);
+          // استخدام رسالة افتراضية في حالة الخطأ
+          setMessages([{
+            id: "default",
+            message: "شحن مجاني للطلبات فوق 300 جنيه",
+            is_active: true,
+            display_order: 1
+          }]);
+        } else if (data && data.length > 0) {
+          setMessages(data);
+        } else {
+          // رسالة افتراضية إذا لم توجد رسائل
+          setMessages([{
+            id: "default",
+            message: "شحن مجاني للطلبات فوق 300 جنيه",
+            is_active: true,
+            display_order: 1
+          }]);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        setMessages([{
+          id: "default",
+          message: "شحن مجاني للطلبات فوق 300 جنيه",
+          is_active: true,
+          display_order: 1
+        }]);
+      }
+    };
+
+    fetchMessages();
+  }, []);
+
+  // تغيير الرسالة كل 4 ثواني
+  useEffect(() => {
+    if (messages.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % messages.length);
+    }, 4000); // 4 ثواني
+
+    return () => clearInterval(interval);
+  }, [messages.length]);
+
   return (
     <div className="bg-[#e60000] text-white text-sm py-2 px-4 md:px-8 lg:px-16 overflow-hidden">
       <div className="relative h-6">
@@ -31,10 +97,15 @@ const TopBar = () => {
             </a>
           </div>
 
-          {/* Center Text */}
-          <p className="font-medium text-center absolute inset-x-0">
-            شحن مجاني للطلبات فوق 300 جنيه
-          </p>
+          {/* Center Text - Animated Messages */}
+          <div className="font-medium text-center absolute inset-x-0 px-20">
+            <div
+              key={currentIndex}
+              className="transition-opacity duration-500"
+            >
+              {messages[currentIndex]?.message || "شحن مجاني للطلبات فوق 300 جنيه"}
+            </div>
+          </div>
 
           {/* Empty space for balance */}
           <div className="hidden md:block w-1/4"></div>
