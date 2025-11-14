@@ -16,7 +16,7 @@ const supabase = createClient(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { items, customerInfo, coupon } = body;
+    const { items, customerInfo, userId } = body;
 
     // التحقق من البيانات
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!customerInfo || !customerInfo.name || !customerInfo.email || !customerInfo.address || !customerInfo.city) {
+    if (!customerInfo || !customerInfo.name || !customerInfo.phone || !customerInfo.address || !customerInfo.city) {
       return NextResponse.json(
         { error: 'يرجى إدخال جميع معلومات العميل' },
         { status: 400 }
@@ -34,60 +34,39 @@ export async function POST(request: NextRequest) {
     }
 
     // حساب المجموع الكلي
-    const subtotal = items.reduce((total: number, item: any) => {
+    const totalAmount = items.reduce((total: number, item: any) => {
       return total + (item.price * item.quantity);
     }, 0);
-
-    // تطبيق الخصم إذا كان هناك كوبون
-    const discountAmount = coupon && coupon.discount ? coupon.discount : 0;
-    const totalAmount = Math.max(subtotal - discountAmount, 0);
 
     // تحويل المنتجات لصيغة Stripe
     const lineItems = items.map((item: any) => ({
       price_data: {
-        currency: 'usd', // يمكن تغييرها لـ 'egp' للجنيه المصري
+        currency: 'egp', // استخدام الجنيه المصري
         product_data: {
           name: item.title,
           description: item.description || '',
           images: item.image_url ? [item.image_url] : [],
         },
-        unit_amount: Math.round(item.price * 100), // تحويل إلى cents
+        unit_amount: Math.round(item.price * 100), // تحويل إلى قروش
       },
       quantity: item.quantity,
     }));
 
-    // إنشاء Checkout Session في Stripe
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: lineItems,
-      mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/canceled`,
-      customer_email: customerInfo.email,
-      metadata: {
-        customer_name: customerInfo.name,
-        customer_phone: customerInfo.phone || '',
-        customer_address: customerInfo.address,
-        customer_city: customerInfo.city,
-      },
-    });
-
-    // حفظ الطلب في Supabase
+    // إنشاء الطلب في Supabase أولاً
     const { data: orderData, error: orderError } = await supabase
       .from('orders')
       .insert([
         {
+          user_id: userId || null,
           customer_name: customerInfo.name,
-          customer_email: customerInfo.email,
-          customer_phone: customerInfo.phone || null,
+          customer_email: customerInfo.email || null,
+          customer_phone: customerInfo.phone,
           customer_address: customerInfo.address,
           customer_city: customerInfo.city,
           total_amount: totalAmount,
-          discount_amount: discountAmount,
-          coupon_code: coupon && coupon.code ? coupon.code : null,
-          stripe_session_id: session.id,
           payment_status: 'pending',
           order_status: 'processing',
+          payment_method: 'stripe',
           items: items,
         },
       ])
@@ -96,14 +75,40 @@ export async function POST(request: NextRequest) {
 
     if (orderError) {
       console.error('خطأ في حفظ الطلب:', orderError);
-      // نواصل حتى لو فشل حفظ الطلب، لأن Stripe session تم إنشاؤها
+      return NextResponse.json(
+        { error: 'حدث خطأ في حفظ الطلب' },
+        { status: 500 }
+      );
     }
+
+    // إنشاء Checkout Session في Stripe
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: lineItems,
+      mode: 'payment',
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/cancel`,
+      customer_email: customerInfo.email,
+      metadata: {
+        order_id: orderData.id,
+        customer_name: customerInfo.name,
+        customer_phone: customerInfo.phone,
+        customer_address: customerInfo.address,
+        customer_city: customerInfo.city,
+      },
+    });
+
+    // تحديث الطلب بـ stripe_session_id
+    await supabase
+      .from('orders')
+      .update({ stripe_session_id: session.id })
+      .eq('id', orderData.id);
 
     // إرجاع URL الخاص بصفحة الدفع
     return NextResponse.json({
       url: session.url,
       sessionId: session.id,
-      orderId: orderData?.id,
+      orderId: orderData.id,
     });
 
   } catch (error: any) {
