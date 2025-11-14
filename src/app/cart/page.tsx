@@ -109,46 +109,21 @@ export default function CartPage() {
   const discount = appliedCoupon ? appliedCoupon.discount : 0;
   const finalTotal = Math.max(subtotal + shippingCost - discount, 0);
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (!validateForm()) {
       alert("يرجى إكمال جميع الحقول المطلوبة");
       return;
     }
 
-    setIsProcessing(true);
+    // حفظ معلومات الشحن والكوبون في localStorage
+    localStorage.setItem("checkoutInfo", JSON.stringify({
+      customerInfo,
+      appliedCoupon,
+      timestamp: Date.now()
+    }));
 
-    try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          items: cart,
-          customerInfo,
-          coupon: appliedCoupon
-            ? {
-                code: appliedCoupon.code,
-                discount: appliedCoupon.discount,
-              }
-            : null,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.url) {
-        // توجيه المستخدم إلى صفحة الدفع في Stripe
-        window.location.href = data.url;
-      } else {
-        alert(data.error || "حدث خطأ في معالجة الطلب");
-        setIsProcessing(false);
-      }
-    } catch (error) {
-      console.error("خطأ في الاتصال:", error);
-      alert("حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى");
-      setIsProcessing(false);
-    }
+    // التوجيه لصفحة checkout حيث يمكن اختيار بوابة الدفع
+    window.location.href = "/checkout";
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -537,19 +512,16 @@ export default function CartPage() {
                 {/* Checkout Button */}
                 <button
                   onClick={handleCheckout}
-                  disabled={isProcessing}
-                  className="mt-8 w-full font-bold py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="mt-8 w-full font-bold py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200"
                   style={{
                     backgroundColor: 'var(--color-primary)',
                     color: 'var(--color-button-text)',
                     '--tw-ring-color': 'var(--color-primary)'
                   } as any}
-                  onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = 'var(--color-primary-hover)')}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-hover)'}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
                 >
-                  {isProcessing
-                    ? "جارٍ التحويل للدفع..."
-                    : "إتمام عملية الشراء عبر Stripe"}
+                  إتمام عملية الشراء
                 </button>
 
                 <Link
