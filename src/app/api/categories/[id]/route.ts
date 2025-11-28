@@ -9,13 +9,14 @@ const supabase = createClient(
 // GET - جلب فئة واحدة
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { data, error } = await supabase
       .from('categories')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (error) {
@@ -37,9 +38,10 @@ export async function GET(
 // PUT - تحديث فئة
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { name, slug, description, parent_id, image_url, display_order, is_active } = body;
 
@@ -56,7 +58,7 @@ export async function PUT(
     const { data, error } = await supabase
       .from('categories')
       .update(updateData)
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single();
 
@@ -82,13 +84,14 @@ export async function PUT(
 // DELETE - حذف فئة
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { error } = await supabase
       .from('categories')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id);
 
     if (error) {
       console.error('خطأ في حذف الفئة:', error);

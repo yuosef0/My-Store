@@ -9,13 +9,14 @@ const supabase = createClient(
 // GET - جلب تقييم واحد
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { data, error } = await supabase
       .from('reviews')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (error) {
@@ -37,9 +38,10 @@ export async function GET(
 // PATCH - تحديث تقييم (للموافقة أو التعديل)
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { is_approved, is_verified_purchase, helpful_count, title, comment, rating } = body;
 
@@ -63,7 +65,7 @@ export async function PATCH(
     const { data, error } = await supabase
       .from('reviews')
       .update(updateData)
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single();
 
@@ -81,13 +83,14 @@ export async function PATCH(
 // DELETE - حذف تقييم
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { error } = await supabase
       .from('reviews')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id);
 
     if (error) {
       console.error('خطأ في حذف التقييم:', error);
