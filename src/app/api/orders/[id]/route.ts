@@ -9,13 +9,14 @@ const supabase = createClient(
 // GET - جلب طلب واحد
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { data, error } = await supabase
       .from('orders')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (error) {
@@ -37,9 +38,10 @@ export async function GET(
 // PATCH - تحديث حالة الطلب
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { order_status, payment_status } = body;
 
@@ -74,7 +76,7 @@ export async function PATCH(
     const { data, error } = await supabase
       .from('orders')
       .update(updateData)
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single();
 
@@ -99,13 +101,14 @@ export async function PATCH(
 // DELETE - حذف طلب (اختياري - قد لا ترغب في السماح بحذف الطلبات)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { error } = await supabase
       .from('orders')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id);
 
     if (error) {
       console.error('خطأ في حذف الطلب:', error);

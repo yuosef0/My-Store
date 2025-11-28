@@ -4,14 +4,15 @@ import { createServerClient } from '@/lib/supabaseServer';
 // GET - جلب كوبون واحد
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const supabase = await createServerClient();
     const { data, error } = await supabase
       .from('coupons')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (error) {
@@ -33,9 +34,10 @@ export async function GET(
 // PUT - تحديث كوبون
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const supabase = await createServerClient();
     const body = await request.json();
     const {
@@ -83,7 +85,7 @@ export async function PUT(
     const { data, error } = await supabase
       .from('coupons')
       .update(updateData)
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single();
 
@@ -109,14 +111,15 @@ export async function PUT(
 // DELETE - حذف كوبون
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const supabase = await createServerClient();
     const { error } = await supabase
       .from('coupons')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id);
 
     if (error) {
       console.error('خطأ في حذف الكوبون:', error);

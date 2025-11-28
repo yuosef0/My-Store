@@ -9,13 +9,14 @@ const supabase = createClient(
 // GET - جلب منتج واحد بالـ ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { data, error } = await supabase
       .from('products')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (error) {
@@ -37,9 +38,10 @@ export async function GET(
 // PUT - تحديث منتج
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { title, slug, description, price, image_url, stock } = body;
 
@@ -77,7 +79,7 @@ export async function PUT(
         image_url: image_url || null,
         stock: stock !== undefined ? parseInt(stock) : 10,
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single();
 
@@ -102,21 +104,22 @@ export async function PUT(
 // DELETE - حذف منتج
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // أولاً، جلب معلومات المنتج للحصول على رابط الصورة
     const { data: product } = await supabase
       .from('products')
       .select('image_url')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     // حذف المنتج من قاعدة البيانات
     const { error } = await supabase
       .from('products')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id);
 
     if (error) {
       console.error('خطأ في حذف المنتج:', error);
