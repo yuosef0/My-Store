@@ -1,7 +1,7 @@
 // src/app/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useCart } from "../contexts/CartContext";
 import Link from "next/link";
@@ -51,7 +51,7 @@ const rotatingMessages = [
   "منتجات أصلية 100% بأفضل الأسعار",
 ];
 
-export default function Home() {
+function HomeContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [sliderImages, setSliderImages] = useState<SliderImage[]>([]);
@@ -456,5 +456,22 @@ export default function Home() {
       {/* Footer */}
       <Footer />
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center min-h-screen bg-[#f8f5f5] dark:bg-[#230f0f]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e60000] mx-auto mb-4"></div>
+            <p className="text-[#666666] dark:text-[#aaaaaa]">جاري تحميل المنتجات...</p>
+          </div>
+        </div>
+      }
+    >
+      <HomeContent />
+    </Suspense>
   );
 }

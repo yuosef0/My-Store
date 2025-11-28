@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCart } from "../../contexts/CartContext";
 import Link from "next/link";
 
-export default function OrderSuccessPage() {
+function OrderSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { clearCart } = useCart();
@@ -90,5 +90,30 @@ export default function OrderSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function OrderSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
+          <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+            <div className="animate-pulse">
+              <div className="mx-auto w-20 h-20 bg-gray-200 rounded-full mb-6"></div>
+              <div className="h-8 bg-gray-200 rounded mb-4 mx-auto max-w-xs"></div>
+              <div className="h-4 bg-gray-200 rounded mb-6 mx-auto max-w-sm"></div>
+              <div className="h-20 bg-gray-100 rounded mb-6"></div>
+              <div className="space-y-3">
+                <div className="h-12 bg-gray-200 rounded"></div>
+                <div className="h-12 bg-gray-100 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <OrderSuccessContent />
+    </Suspense>
   );
 }
