@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function SuccessPage() {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
   const [orderDetails, setOrderDetails] = useState<any>(null);
@@ -111,5 +111,32 @@ export default function SuccessPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+          <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 text-center">
+            <div className="animate-pulse space-y-6">
+              <div className="w-24 h-24 mx-auto bg-gray-200 rounded-full"></div>
+              <div className="space-y-3">
+                <div className="h-8 bg-gray-200 rounded mx-auto max-w-xs"></div>
+                <div className="h-4 bg-gray-200 rounded mx-auto max-w-sm"></div>
+              </div>
+              <div className="h-20 bg-gray-100 rounded"></div>
+              <div className="space-y-3">
+                <div className="h-12 bg-gray-200 rounded"></div>
+                <div className="h-12 bg-gray-100 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </main>
+      }
+    >
+      <SuccessContent />
+    </Suspense>
   );
 }
