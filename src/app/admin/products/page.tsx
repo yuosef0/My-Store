@@ -8,6 +8,7 @@ interface Category {
   id: string;
   name: string;
   slug: string;
+  is_active: boolean;
 }
 
 interface Product {
