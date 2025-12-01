@@ -8,6 +8,7 @@ import { AuthProvider } from "../contexts/AuthContext";
 import { WishlistProvider } from "../contexts/WishlistContext";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import ConditionalHeader from "../components/ConditionalHeader";
+import LicenseProtection from "../components/LicenseProtection";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,18 +35,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>
-          <AuthProvider>
-            <WishlistProvider>
-              <CartProvider>
-                <Suspense fallback={<div style={{ height: '80px' }} />}>
-                  <ConditionalHeader />
-                </Suspense>
-                {children}
-              </CartProvider>
-            </WishlistProvider>
-          </AuthProvider>
-        </ThemeProvider>
+        <LicenseProtection>
+          <ThemeProvider>
+            <AuthProvider>
+              <WishlistProvider>
+                <CartProvider>
+                  <Suspense fallback={<div style={{ height: '80px' }} />}>
+                    <ConditionalHeader />
+                  </Suspense>
+                  {children}
+                </CartProvider>
+              </WishlistProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </LicenseProtection>
       </body>
     </html>
   );
