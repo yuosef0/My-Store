@@ -381,7 +381,7 @@ export default function AdminOrdersPage() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
+              <div className="admin-table-container">
                 <table className="w-full text-right">
                   <thead>
                     <tr className="border-b border-slate-200 dark:border-slate-800">
