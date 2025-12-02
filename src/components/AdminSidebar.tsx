@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "../contexts/AuthContext";
@@ -8,6 +9,7 @@ export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, signOut } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     await signOut();
@@ -91,33 +93,106 @@ export default function AdminSidebar() {
 
   const bottomNavItems: any[] = [];
 
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
+
   return (
-    <aside className="w-64 flex-shrink-0 bg-white dark:bg-[#182635] border-l border-slate-200 dark:border-slate-800">
-      <div className="flex h-full flex-col justify-between p-4">
-        <div className="flex flex-col gap-4">
-          {/* Admin Info */}
-          <div className="flex gap-3 items-center p-2">
-            <div className="w-10 h-10 bg-[#137fec]/10 dark:bg-[#137fec]/20 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-[#137fec]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
+    <>
+      {/* Mobile Header */}
+      <div className="lg:hidden sticky top-0 z-40 bg-white dark:bg-[#182635] border-b border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-between p-4">
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            aria-label="Toggle menu"
+          >
+            <svg className="w-6 h-6 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {isMobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+          <h1 className="text-lg font-bold text-slate-900 dark:text-white">لوحة التحكم</h1>
+          <Link
+            href="/"
+            className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            aria-label="Go to home"
+          >
+            <svg className="w-6 h-6 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+          </Link>
+        </div>
+      </div>
+
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={closeMobileMenu}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed lg:sticky top-0 right-0 z-50 h-screen
+          w-64 flex-shrink-0 bg-white dark:bg-[#182635]
+          border-l border-slate-200 dark:border-slate-800
+          transition-transform duration-300 ease-in-out
+          ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
+        `}
+      >
+        <div className="flex h-full flex-col justify-between p-4 overflow-y-auto">
+          <div className="flex flex-col gap-4">
+            {/* Admin Info */}
+            <div className="flex gap-3 items-center p-2">
+              <div className="w-10 h-10 bg-[#137fec]/10 dark:bg-[#137fec]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6 text-[#137fec]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <div className="flex flex-col min-w-0">
+                <h1 className="text-slate-900 dark:text-white text-base font-medium leading-normal truncate">
+                  {user?.user_metadata?.full_name || "المدير"}
+                </h1>
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal">مدير</p>
+              </div>
             </div>
-            <div className="flex flex-col min-w-0">
-              <h1 className="text-slate-900 dark:text-white text-base font-medium leading-normal truncate">
-                {user?.user_metadata?.full_name || "المدير"}
-              </h1>
-              <p className="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal">مدير</p>
-            </div>
+
+            {/* Navigation */}
+            <nav className="flex flex-col gap-2 mt-4">
+              {navItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={closeMobileMenu}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                      isActive
+                        ? "bg-[#137fec]/10 dark:bg-[#137fec]/20 text-[#137fec]"
+                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    {item.icon}
+                    <p className="text-sm font-medium leading-normal">{item.name}</p>
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex flex-col gap-2 mt-4">
-            {navItems.map((item) => {
+          {/* Bottom Navigation */}
+          <div className="flex flex-col gap-1 mt-4">
+            {bottomNavItems.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={closeMobileMenu}
                   className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                     isActive
                       ? "bg-[#137fec]/10 dark:bg-[#137fec]/20 text-[#137fec]"
@@ -129,40 +204,22 @@ export default function AdminSidebar() {
                 </Link>
               );
             })}
-          </nav>
-        </div>
 
-        {/* Bottom Navigation */}
-        <div className="flex flex-col gap-1">
-          {bottomNavItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  isActive
-                    ? "bg-[#137fec]/10 dark:bg-[#137fec]/20 text-[#137fec]"
-                    : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-                }`}
-              >
-                {item.icon}
-                <p className="text-sm font-medium leading-normal">{item.name}</p>
-              </Link>
-            );
-          })}
-
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            <p className="text-sm font-medium leading-normal">تسجيل الخروج</p>
-          </button>
+            <button
+              onClick={() => {
+                handleLogout();
+                closeMobileMenu();
+              }}
+              className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <p className="text-sm font-medium leading-normal">تسجيل الخروج</p>
+            </button>
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 }

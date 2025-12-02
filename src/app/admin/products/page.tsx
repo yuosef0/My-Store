@@ -654,8 +654,8 @@ export default function AdminProductsPage() {
         {/* Search Bar & Tabs */}
         <div className="bg-white dark:bg-[#182635] rounded-xl border border-slate-200 dark:border-slate-800 p-2">
           {/* Search and Actions */}
-          <div className="flex flex-wrap justify-between items-center gap-4 p-4">
-            <div className="flex-1 min-w-[250px]">
+          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 p-4">
+            <div className="flex-1 w-full sm:max-w-md">
               <label className="flex flex-col w-full">
                 <div className="flex w-full flex-1 items-stretch rounded-lg h-11">
                   <div className="text-slate-400 flex bg-slate-100 dark:bg-slate-900 items-center justify-center pr-4 rounded-r-lg">
@@ -678,13 +678,13 @@ export default function AdminProductsPage() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-[#137fec]/50 border-none bg-slate-100 dark:bg-slate-900 h-full placeholder:text-slate-400 px-4 rounded-r-none pl-2 text-base font-normal leading-normal"
-                    placeholder="ابحث عن منتج بالاسم أو SKU"
+                    placeholder="ابحث عن منتج..."
                   />
                 </div>
               </label>
             </div>
             <div className="flex items-center gap-2">
-              <button className="flex items-center justify-center gap-2 rounded-lg h-11 px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+              <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-lg h-11 px-3 sm:px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -698,9 +698,9 @@ export default function AdminProductsPage() {
                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
                   />
                 </svg>
-                <span>فلتر</span>
+                <span className="hidden sm:inline">فلتر</span>
               </button>
-              <button className="flex items-center justify-center gap-2 rounded-lg h-11 px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+              <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-lg h-11 px-3 sm:px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -714,14 +714,14 @@ export default function AdminProductsPage() {
                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
                   />
                 </svg>
-                <span>تصدير</span>
+                <span className="hidden sm:inline">تصدير</span>
               </button>
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="border-b border-slate-200 dark:border-slate-800 px-4">
-            <div className="flex gap-8">
+          <div className="border-b border-slate-200 dark:border-slate-800 px-4 overflow-x-auto scrollbar-hide">
+            <div className="flex gap-4 sm:gap-8 min-w-max sm:min-w-0">
               <button
                 onClick={() => setActiveTab("all")}
                 className={`flex flex-col items-center justify-center border-b-[3px] pb-3 pt-4 ${
@@ -781,7 +781,8 @@ export default function AdminProductsPage() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
+              {/* Desktop Table View */}
+              <div className="hidden lg:block overflow-x-auto">
                 <table className="w-full text-right">
                   <thead>
                     <tr className="border-b border-slate-200 dark:border-slate-800">
@@ -932,16 +933,105 @@ export default function AdminProductsPage() {
                 </table>
               </div>
 
+              {/* Mobile Card View */}
+              <div className="lg:hidden space-y-3">
+                {filteredProducts.map((product) => {
+                  const category = categories.find((c) => c.id === product.category_id);
+                  const stockStatus = getStockStatus(product.stock);
+                  return (
+                    <div
+                      key={product.id}
+                      className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4"
+                    >
+                      {/* Header with image and checkbox */}
+                      <div className="flex items-start gap-3 mb-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedProducts.has(product.id)}
+                          onChange={() => toggleProductSelection(product.id)}
+                          className="form-checkbox mt-1 h-5 w-5 flex-shrink-0 rounded-md border-slate-300 dark:border-slate-600 bg-transparent text-[#137fec] checked:bg-[#137fec] checked:border-[#137fec] focus:ring-0 focus:ring-offset-0 focus:border-[#137fec]"
+                        />
+                        {product.images && product.images[0] ? (
+                          <img
+                            src={product.images[0]}
+                            alt={product.title}
+                            className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
+                          />
+                        ) : (
+                          <div className="w-16 h-16 bg-slate-200 dark:bg-slate-700 rounded-lg flex items-center justify-center text-slate-400 flex-shrink-0">
+                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-slate-900 dark:text-slate-100 truncate">
+                            {product.title}
+                          </h3>
+                          <p className="text-sm text-slate-500 dark:text-slate-400">
+                            {category?.name || "غير محدد"}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Details */}
+                      <div className="grid grid-cols-2 gap-3 mb-3 text-sm">
+                        <div>
+                          <span className="text-slate-500 dark:text-slate-400">السعر:</span>
+                          <p className="font-medium text-slate-900 dark:text-slate-100">
+                            {product.price.toFixed(2)} جنيه
+                          </p>
+                        </div>
+                        <div>
+                          <span className="text-slate-500 dark:text-slate-400">المخزون:</span>
+                          <p className={`font-medium ${stockStatus.className}`}>
+                            {stockStatus.label}
+                          </p>
+                        </div>
+                        <div className="col-span-2">
+                          <span className="text-slate-500 dark:text-slate-400">المتغيرات:</span>
+                          <p className="font-medium text-slate-900 dark:text-slate-100">
+                            {product.sizes?.length || 0} مقاسات, {product.colors?.length || 0} ألوان
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex gap-2 pt-3 border-t border-slate-200 dark:border-slate-700">
+                        <button
+                          onClick={() => startEdit(product)}
+                          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          <span className="text-sm">تعديل</span>
+                        </button>
+                        <button
+                          onClick={() => handleDelete(product.id, product.title)}
+                          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/60 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          <span className="text-sm">حذف</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
               {/* Pagination */}
-              <div className="flex items-center justify-between p-4 border-t border-slate-200 dark:border-slate-800">
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-slate-200 dark:border-slate-800">
+                <p className="text-sm text-slate-500 dark:text-slate-400 text-center sm:text-right">
                   عرض {filteredProducts.length} من {products.length} منتج
                 </p>
                 <div className="flex items-center gap-2">
-                  <button className="flex items-center justify-center rounded-lg h-9 px-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                  <button className="flex items-center justify-center rounded-lg h-9 px-3 sm:px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
                     السابق
                   </button>
-                  <button className="flex items-center justify-center rounded-lg h-9 px-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                  <button className="flex items-center justify-center rounded-lg h-9 px-3 sm:px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
                     التالي
                   </button>
                 </div>
