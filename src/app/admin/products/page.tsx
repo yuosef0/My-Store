@@ -782,7 +782,7 @@ export default function AdminProductsPage() {
           ) : (
             <>
               {/* Desktop Table View */}
-              <div className="hidden lg:block overflow-x-auto">
+              <div className="hidden lg:block admin-table-container">
                 <table className="w-full text-right">
                   <thead>
                     <tr className="border-b border-slate-200 dark:border-slate-800">

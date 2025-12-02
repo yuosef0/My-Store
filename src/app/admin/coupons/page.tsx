@@ -582,7 +582,7 @@ export default function AdminCouponsPage() {
                 {searchQuery ? "لا توجد نتائج للبحث" : "لا توجد كوبونات حالياً"}
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="admin-table-container">
                 <table className="w-full text-right">
                   <thead className="bg-slate-50 dark:bg-slate-900/50">
                     <tr>

@@ -262,7 +262,7 @@ export default function AdminCategoriesPage() {
             </div>
 
             {/* Table */}
-            <div className="w-full overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#182635]">
+            <div className="admin-table-container bg-white dark:bg-[#182635]">
               {loading ? (
                 <div className="p-8 text-center">
                   <div className="inline-block w-8 h-8 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin"></div>

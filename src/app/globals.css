@@ -512,3 +512,68 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
 }
+
+/* Admin Tables Responsive Styles */
+@media (max-width: 1024px) {
+  /* Make tables scrollable on mobile */
+  .admin-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-table-container table {
+    min-width: 800px; /* Ensure table has minimum width on mobile */
+  }
+
+  /* Adjust padding for mobile */
+  .admin-table-container th,
+  .admin-table-container td {
+    padding: 0.75rem 0.5rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  /* Hide less important columns on mobile */
+  .admin-table-hide-mobile {
+    display: none;
+  }
+}
+
+/* Better table styles for admin */
+.admin-table-container {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid rgb(226 232 240);
+}
+
+.dark .admin-table-container {
+  border-color: rgb(51 65 85);
+}
+
+.admin-table-container table {
+  width: 100%;
+  text-align: right;
+}
+
+.admin-table-container thead {
+  background-color: rgb(248 250 252);
+}
+
+.dark .admin-table-container thead {
+  background-color: rgb(15 23 42 / 0.5);
+}
+
+.admin-table-container tbody tr {
+  border-bottom: 1px solid rgb(226 232 240);
+}
+
+.dark .admin-table-container tbody tr {
+  border-color: rgb(51 65 85);
+}
+
+.admin-table-container tbody tr:hover {
+  background-color: rgb(248 250 252);
+}
+
+.dark .admin-table-container tbody tr:hover {
+  background-color: rgb(15 23 42 / 0.5);
+}
