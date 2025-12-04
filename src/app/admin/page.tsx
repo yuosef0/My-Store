@@ -103,7 +103,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-3 sm:p-4 md:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl">
         {loading ? (
           <div className="flex justify-center items-center h-64">
@@ -112,12 +112,12 @@ export default function AdminDashboard() {
         ) : (
           <>
             {/* Page Heading */}
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-6 sm:mb-8">
               <div className="flex flex-col gap-2">
-                <h1 className="text-4xl font-black leading-tight tracking-tight text-slate-900 dark:text-white">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight text-slate-900 dark:text-white">
                   لوحة التحكم الرئيسية
                 </h1>
-                <p className="text-base font-normal leading-normal text-slate-500 dark:text-slate-400">
+                <p className="text-sm sm:text-base font-normal leading-normal text-slate-500 dark:text-slate-400">
                   نظرة عامة على أداء متجرك
                 </p>
               </div>
@@ -175,13 +175,13 @@ export default function AdminDashboard() {
             </div>
 
             {/* Recent Orders Section */}
-            <h2 className="px-4 pb-3 pt-5 text-[22px] font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
+            <h2 className="px-2 sm:px-4 pb-3 pt-5 text-lg sm:text-xl md:text-[22px] font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
               آخر الطلبات
             </h2>
 
             {/* Table */}
-            <div className="px-4 py-3">
-              <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#182635]">
+            <div className="px-2 sm:px-4 py-3">
+              <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#182635]">
                 {recentOrders.length === 0 ? (
                   <div className="p-8 text-center text-slate-500 dark:text-slate-400">
                     لا توجد طلبات حالياً

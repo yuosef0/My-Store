@@ -358,7 +358,7 @@ export default function AdminProductsPage() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-3 sm:p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* رسالة */}
         {message && (
@@ -374,12 +374,12 @@ export default function AdminProductsPage() {
         )}
 
         {/* Page Heading */}
-        <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+        <div className="flex flex-wrap justify-between items-center gap-4 mb-4 sm:mb-6">
           <div className="flex flex-col gap-1">
-            <p className="text-slate-900 dark:text-white text-3xl font-bold leading-tight">
+            <p className="text-slate-900 dark:text-white text-2xl sm:text-3xl font-bold leading-tight">
               إدارة المنتجات
             </p>
-            <p className="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal">
+            <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base font-normal leading-normal">
               إضافة وتعديل وحذف المنتجات في متجرك
             </p>
           </div>
@@ -408,15 +408,15 @@ export default function AdminProductsPage() {
 
         {/* نموذج */}
         {(isAddingNew || editingProduct) && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h2 className="text-xl font-bold mb-4">
+          <div className="bg-white dark:bg-[#182635] rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-xl font-bold mb-4 text-slate-900 dark:text-white">
               {editingProduct ? "✏️ تعديل المنتج" : "➕ إضافة منتج جديد"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* اسم المنتج والسعر */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                     اسم المنتج *
                   </label>
                   <input
@@ -426,13 +426,13 @@ export default function AdminProductsPage() {
                       setFormData({ ...formData, title: e.target.value })
                     }
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="مثال: تيشيرت قطن رجالي"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                     السعر (ج.م) *
                   </label>
                   <input
@@ -443,7 +443,7 @@ export default function AdminProductsPage() {
                       setFormData({ ...formData, price: e.target.value })
                     }
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="299.00"
                   />
                 </div>
@@ -453,13 +453,13 @@ export default function AdminProductsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                       القسم *
                     </label>
                     <button
                       type="button"
                       onClick={fetchCategories}
-                      className="text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                      className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline"
                       title="تحديث قائمة الأقسام"
                     >
                       🔄 تحديث
@@ -471,7 +471,7 @@ export default function AdminProductsPage() {
                       setFormData({ ...formData, category_id: e.target.value })
                     }
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">-- اختر القسم --</option>
                     {categories.map((cat) => (
@@ -483,7 +483,7 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                     الكمية المتوفرة *
                   </label>
                   <input
@@ -493,7 +493,7 @@ export default function AdminProductsPage() {
                       setFormData({ ...formData, stock: e.target.value })
                     }
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="10"
                   />
                 </div>
@@ -501,7 +501,7 @@ export default function AdminProductsPage() {
 
               {/* الوصف */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                   الوصف
                 </label>
                 <textarea
@@ -510,7 +510,7 @@ export default function AdminProductsPage() {
                     setFormData({ ...formData, description: e.target.value })
                   }
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="وصف المنتج..."
                 />
               </div>
@@ -518,13 +518,13 @@ export default function AdminProductsPage() {
               {/* المقاسات */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-gray-700">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     المقاسات
                   </label>
                   <button
                     type="button"
                     onClick={addSize}
-                    className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                    className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
                   >
                     + إضافة مقاس
                   </button>
@@ -533,13 +533,13 @@ export default function AdminProductsPage() {
                   {sizes.map((size, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-1 bg-gray-100 px-3 py-1.5 rounded-lg"
+                      className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 px-3 py-1.5 rounded-lg"
                     >
-                      <span className="text-sm font-medium">{size}</span>
+                      <span className="text-sm font-medium text-slate-900 dark:text-white">{size}</span>
                       <button
                         type="button"
                         onClick={() => removeSize(index)}
-                        className="text-red-600 hover:text-red-700 ml-1"
+                        className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 ml-1"
                       >
                         ×
                       </button>
@@ -551,13 +551,13 @@ export default function AdminProductsPage() {
               {/* الألوان */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-gray-700">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     الألوان
                   </label>
                   <button
                     type="button"
                     onClick={addColor}
-                    className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                    className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
                   >
                     + إضافة لون
                   </button>
@@ -572,7 +572,7 @@ export default function AdminProductsPage() {
                           updateColor(index, "name", e.target.value)
                         }
                         placeholder="اسم اللون"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        className="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg text-sm"
                       />
                       <input
                         type="color"
@@ -580,12 +580,12 @@ export default function AdminProductsPage() {
                         onChange={(e) =>
                           updateColor(index, "hex", e.target.value)
                         }
-                        className="w-12 h-10 border border-gray-300 rounded-lg cursor-pointer"
+                        className="w-12 h-10 border border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer"
                       />
                       <button
                         type="button"
                         onClick={() => removeColor(index)}
-                        className="text-red-600 hover:text-red-700 px-2"
+                        className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 px-2"
                       >
                         🗑️
                       </button>
@@ -596,7 +596,7 @@ export default function AdminProductsPage() {
 
               {/* الصور */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                   صور المنتج {!editingProduct && "*"}
                 </label>
                 <input
@@ -607,9 +607,9 @@ export default function AdminProductsPage() {
                     const files = Array.from(e.target.files || []);
                     setImages(files);
                   }}
-                  className="w-full text-sm"
+                  className="w-full text-sm text-slate-900 dark:text-white"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   يمكنك اختيار عدة صور (اضغط Ctrl/Cmd مع النقر)
                 </p>
                 {editingProduct?.images && editingProduct.images.length > 0 && (
@@ -627,11 +627,11 @@ export default function AdminProductsPage() {
               </div>
 
               {/* الأزرار */}
-              <div className="flex gap-3 pt-2">
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition font-medium"
+                  className="flex-1 sm:flex-none bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition font-medium"
                 >
                   {submitting
                     ? "جارٍ الحفظ..."
@@ -642,7 +642,7 @@ export default function AdminProductsPage() {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="bg-gray-200 text-gray-700 px-6 py-2.5 rounded-lg hover:bg-gray-300 transition font-medium"
+                  className="flex-1 sm:flex-none bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-6 py-2.5 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition font-medium"
                 >
                   إلغاء
                 </button>
