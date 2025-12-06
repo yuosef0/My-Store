@@ -60,27 +60,42 @@ export default function AdminTopBarMessagesPage() {
         // تحديث
         const { error } = await supabase
           .from("top_bar_messages")
-          .update(formData)
+          .update({
+            message: formData.message,
+            is_active: formData.is_active,
+            display_order: formData.display_order,
+          })
           .eq("id", editing);
 
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase error:", error);
+          throw error;
+        }
         setMessage("✅ تم تحديث الرسالة بنجاح!");
       } else {
         // إضافة جديدة
         const { error } = await supabase
           .from("top_bar_messages")
-          .insert(formData);
+          .insert({
+            message: formData.message,
+            is_active: formData.is_active,
+            display_order: formData.display_order,
+          });
 
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase error:", error);
+          throw error;
+        }
         setMessage("✅ تم إضافة الرسالة بنجاح!");
       }
 
       setFormData({ message: "", is_active: true, display_order: 1 });
       setEditing(null);
-      fetchMessages();
+      await fetchMessages();
     } catch (error: any) {
       console.error("خطأ:", error);
-      setMessage("❌ فشل: " + error.message);
+      const errorMessage = error?.message || error?.error_description || JSON.stringify(error);
+      setMessage("❌ فشل في الحفظ: " + errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -96,6 +111,8 @@ export default function AdminTopBarMessagesPage() {
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm("هل أنت متأكد من حذف هذه الرسالة؟")) return;
+
     try {
       const { error } = await supabase
         .from("top_bar_messages")
@@ -107,7 +124,7 @@ export default function AdminTopBarMessagesPage() {
       fetchMessages();
     } catch (error: any) {
       console.error("خطأ في الحذف:", error);
-      setMessage("❌ فشل في الحذف: " + error.message);
+      setMessage("❌ فشل في الحذف: " + (error?.message || "حدث خطأ غير معروف"));
     }
   };
 
@@ -119,10 +136,11 @@ export default function AdminTopBarMessagesPage() {
         .eq("id", id);
 
       if (error) throw error;
+      setMessage(`✅ تم ${!currentStatus ? 'تفعيل' : 'تعطيل'} الرسالة بنجاح!`);
       fetchMessages();
     } catch (error: any) {
       console.error("خطأ:", error);
-      setMessage("❌ فشل في التحديث");
+      setMessage("❌ فشل في التحديث: " + (error?.message || "حدث خطأ غير معروف"));
     }
   };
 
