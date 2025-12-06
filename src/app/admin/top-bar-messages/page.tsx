@@ -133,14 +133,14 @@ export default function AdminTopBarMessagesPage() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-3 sm:p-4 md:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
-        <header className="mb-6">
-          <h1 className="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-tight">
+        <header className="mb-4 sm:mb-6">
+          <h1 className="text-slate-900 dark:text-white text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight">
             إدارة رسائل الشريط الأحمر
           </h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-2">
+          <p className="text-slate-600 dark:text-slate-400 mt-2 text-sm sm:text-base">
             الرسائل تتغير تلقائياً كل 4 ثواني
           </p>
         </header>
@@ -157,8 +157,8 @@ export default function AdminTopBarMessagesPage() {
         )}
 
         {/* Add/Edit Form */}
-        <div className="bg-white dark:bg-[#182635] rounded-lg p-6 border border-slate-200 dark:border-slate-800 mb-6">
-          <h2 className="text-xl font-bold mb-4 text-slate-900 dark:text-white">
+        <div className="bg-white dark:bg-[#182635] rounded-lg p-4 sm:p-6 border border-slate-200 dark:border-slate-800 mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-bold mb-4 text-slate-900 dark:text-white">
             {editing ? "تعديل الرسالة" : "إضافة رسالة جديدة"}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -204,11 +204,11 @@ export default function AdminTopBarMessagesPage() {
               </div>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 sm:flex-none px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {submitting ? "جاري الحفظ..." : editing ? "تحديث" : "إضافة"}
               </button>
@@ -216,7 +216,7 @@ export default function AdminTopBarMessagesPage() {
                 <button
                   type="button"
                   onClick={cancelEdit}
-                  className="px-6 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-900 dark:text-white rounded-lg font-medium transition-colors"
+                  className="flex-1 sm:flex-none px-6 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-900 dark:text-white rounded-lg font-medium transition-colors"
                 >
                   إلغاء
                 </button>
@@ -227,8 +227,8 @@ export default function AdminTopBarMessagesPage() {
 
         {/* Messages List */}
         <div className="bg-white dark:bg-[#182635] rounded-lg border border-slate-200 dark:border-slate-800">
-          <div className="p-6">
-            <h2 className="text-xl font-bold mb-4 text-slate-900 dark:text-white">
+          <div className="p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-bold mb-4 text-slate-900 dark:text-white">
               الرسائل الحالية ({messages.length})
             </h2>
 
@@ -243,14 +243,14 @@ export default function AdminTopBarMessagesPage() {
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
-                    className={`p-4 rounded-lg border ${
+                    className={`p-3 sm:p-4 rounded-lg border ${
                       msg.is_active
                         ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20"
                         : "border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50"
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
+                    <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-3 sm:gap-4">
+                      <div className="flex-1 w-full">
                         <div className="flex items-center gap-3 mb-2">
                           <span className="px-2 py-1 text-xs font-bold rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
                             #{msg.display_order}
@@ -270,23 +270,23 @@ export default function AdminTopBarMessagesPage() {
                         </p>
                       </div>
 
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                         <button
                           onClick={() => toggleActive(msg.id, msg.is_active)}
-                          className="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                          className="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors whitespace-nowrap"
                           title={msg.is_active ? "تعطيل" : "تفعيل"}
                         >
                           {msg.is_active ? "تعطيل" : "تفعيل"}
                         </button>
                         <button
                           onClick={() => handleEdit(msg)}
-                          className="px-3 py-1 text-sm bg-yellow-600 hover:bg-yellow-700 text-white rounded transition-colors"
+                          className="px-3 py-1.5 text-sm bg-yellow-600 hover:bg-yellow-700 text-white rounded transition-colors"
                         >
                           تعديل
                         </button>
                         <button
                           onClick={() => handleDelete(msg.id)}
-                          className="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded transition-colors"
+                          className="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700 text-white rounded transition-colors"
                         >
                           حذف
                         </button>

@@ -13,17 +13,18 @@ export default function AdminGuard({ children }: AdminGuardProps) {
   const router = useRouter();
 
   useEffect(() => {
-    // انتظر تحميل بيانات المستخدم
+    // لا تفعل أي شيء أثناء التحميل
     if (loading) return;
 
-    // إذا لم يكن مسجل دخول، وجهه لصفحة تسجيل الدخول
+    // بعد انتهاء التحميل، تحقق من صلاحيات المستخدم
     if (!user) {
+      // المستخدم غير مسجل دخول
       router.push("/login?redirect=/admin");
       return;
     }
 
-    // إذا كان مسجل دخول لكن ليس أدمن، وجهه للصفحة الرئيسية
     if (!isAdmin) {
+      // المستخدم مسجل دخول لكن ليس أدمن
       router.push("/");
       return;
     }

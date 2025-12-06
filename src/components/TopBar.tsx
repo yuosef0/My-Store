@@ -70,11 +70,11 @@ const TopBar = () => {
   }, [messages.length]);
 
   return (
-    <div className="text-white text-base md:text-lg py-3 px-4 md:px-8 lg:px-16 overflow-hidden" style={{ backgroundColor: 'var(--color-top-bar-bg, #e60000)' }}>
+    <div className="text-white text-sm sm:text-base md:text-lg py-2 sm:py-3 px-2 sm:px-4 md:px-8 lg:px-16 overflow-hidden" style={{ backgroundColor: 'var(--color-top-bar-bg, #e60000)' }}>
       <div className="relative h-7">
         <div className="absolute inset-0 flex items-center justify-between">
-          {/* Social Icons */}
-          <div className="flex items-center gap-3">
+          {/* Social Icons - Hidden on mobile */}
+          <div className="hidden sm:flex items-center gap-3">
             <a
               href="https://facebook.com"
               target="_blank"
@@ -98,7 +98,7 @@ const TopBar = () => {
           </div>
 
           {/* Center Text - Animated Messages */}
-          <div className="font-semibold text-center absolute inset-x-0 px-20">
+          <div className="font-semibold text-center absolute inset-x-0 px-2 sm:px-12 md:px-20">
             <div className="relative h-7 overflow-hidden">
               {messages.map((msg, index) => (
                 <div
@@ -111,13 +111,13 @@ const TopBar = () => {
                       : "opacity-0 translate-y-full"
                   }`}
                 >
-                  {msg.message}
+                  <span className="truncate px-2">{msg.message}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Empty space for balance */}
+          {/* Empty space for balance - Hidden on mobile */}
           <div className="hidden md:block w-1/4"></div>
         </div>
       </div>

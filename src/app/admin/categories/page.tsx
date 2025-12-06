@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "../../../lib/supabaseClient";
 
 interface Category {
@@ -20,6 +20,7 @@ export default function AdminCategoriesPage() {
   const [loading, setLoading] = useState(true);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
+  const formRef = useRef<HTMLDivElement>(null);
 
   // Form states
   const [formData, setFormData] = useState({
@@ -162,6 +163,11 @@ export default function AdminCategoriesPage() {
       is_active: category.is_active,
     });
     setMessage("");
+
+    // Scroll to form on mobile
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   // إلغاء التعديل
@@ -526,7 +532,7 @@ export default function AdminCategoriesPage() {
 
           {/* Right Section: Add/Edit Form */}
           <div className="lg:col-span-1">
-            <div className="sticky top-8 rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#182635]">
+            <div ref={formRef} className="sticky top-8 rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#182635]">
               {/* Section Header */}
               <h2 className="pb-6 text-xl font-bold text-slate-900 dark:text-white">
                 {editingCategory ? "تعديل قسم" : "إضافة قسم جديد"}
