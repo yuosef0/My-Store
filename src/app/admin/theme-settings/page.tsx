@@ -67,13 +67,22 @@ export default function AdminThemeSettingsPage() {
         if (error) throw error;
       }
 
-      setMessage("✅ تم حفظ الألوان بنجاح! قم بتحديث الصفحة لرؤية التغييرات");
+      setMessage("✅ تم حفظ الألوان بنجاح!");
 
       // Refresh settings
       await fetchSettings();
 
       // Trigger a custom event to notify ThemeProvider
       window.dispatchEvent(new Event("theme-updated"));
+
+      // Apply colors immediately to current page
+      const root = document.documentElement;
+      root.style.setProperty("--color-primary", formData.primary_color || "#e60000");
+      root.style.setProperty("--color-primary-hover", formData.primary_hover || "#cc0000");
+      root.style.setProperty("--color-top-bar-bg", formData.top_bar_bg || "#e60000");
+      root.style.setProperty("--color-button-text", formData.button_text || "#ffffff");
+      root.style.setProperty("--color-price", formData.price_color || "#e60000");
+      root.style.setProperty("--color-product-card-bg", formData.product_card_bg || "#ffffff");
     } catch (error: any) {
       console.error("خطأ:", error);
       setMessage("❌ فشل في الحفظ: " + error.message);
@@ -96,14 +105,14 @@ export default function AdminThemeSettingsPage() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-3 sm:p-4 md:p-6 lg:p-8">
       <div className="mx-auto max-w-5xl">
         {/* Header */}
-        <header className="mb-6">
-          <h1 className="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-tight">
+        <header className="mb-4 sm:mb-6">
+          <h1 className="text-slate-900 dark:text-white text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight">
             إعدادات ألوان الموقع
           </h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-2">
+          <p className="text-slate-600 dark:text-slate-400 mt-2 text-sm sm:text-base">
             تحكم في الألوان الأساسية للموقع
           </p>
         </header>
@@ -130,8 +139,8 @@ export default function AdminThemeSettingsPage() {
         ) : (
           <form onSubmit={handleSubmit}>
             {/* Color Settings Grid */}
-            <div className="bg-white dark:bg-[#182635] rounded-lg p-6 border border-slate-200 dark:border-slate-800 mb-6">
-              <h2 className="text-xl font-bold mb-6 text-slate-900 dark:text-white">
+            <div className="bg-white dark:bg-[#182635] rounded-lg p-4 sm:p-6 border border-slate-200 dark:border-slate-800 mb-4 sm:mb-6">
+              <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-slate-900 dark:text-white">
                 الألوان الأساسية
               </h2>
 
@@ -193,8 +202,8 @@ export default function AdminThemeSettingsPage() {
             </div>
 
             {/* Live Preview */}
-            <div className="bg-white dark:bg-[#182635] rounded-lg p-6 border border-slate-200 dark:border-slate-800 mb-6">
-              <h2 className="text-xl font-bold mb-4 text-slate-900 dark:text-white">
+            <div className="bg-white dark:bg-[#182635] rounded-lg p-4 sm:p-6 border border-slate-200 dark:border-slate-800 mb-4 sm:mb-6">
+              <h2 className="text-lg sm:text-xl font-bold mb-4 text-slate-900 dark:text-white">
                 معاينة الألوان
               </h2>
 
@@ -288,7 +297,7 @@ export default function AdminThemeSettingsPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 justify-end">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-end">
               <button
                 type="button"
                 onClick={resetToDefaults}
