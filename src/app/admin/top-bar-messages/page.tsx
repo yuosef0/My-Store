@@ -5,7 +5,8 @@ import { supabase } from "../../../lib/supabaseClient";
 
 interface TopBarMessage {
   id: string;
-  message: string;
+  message_ar: string;
+  message_en: string | null;
   is_active: boolean;
   display_order: number;
   created_at: string;
@@ -16,7 +17,8 @@ export default function AdminTopBarMessagesPage() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    message: "",
+    message_ar: "",
+    message_en: "",
     is_active: true,
     display_order: 1,
   });
@@ -47,8 +49,8 @@ export default function AdminTopBarMessagesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.message.trim()) {
-      setMessage("❌ الرجاء كتابة الرسالة");
+    if (!formData.message_ar.trim()) {
+      setMessage("❌ الرجاء كتابة الرسالة العربية");
       return;
     }
 
@@ -61,7 +63,8 @@ export default function AdminTopBarMessagesPage() {
         const { error } = await supabase
           .from("top_bar_messages")
           .update({
-            message: formData.message,
+            message_ar: formData.message_ar,
+            message_en: formData.message_en || null,
             is_active: formData.is_active,
             display_order: formData.display_order,
           })
@@ -77,7 +80,8 @@ export default function AdminTopBarMessagesPage() {
         const { error } = await supabase
           .from("top_bar_messages")
           .insert({
-            message: formData.message,
+            message_ar: formData.message_ar,
+            message_en: formData.message_en || null,
             is_active: formData.is_active,
             display_order: formData.display_order,
           });
@@ -89,7 +93,7 @@ export default function AdminTopBarMessagesPage() {
         setMessage("✅ تم إضافة الرسالة بنجاح!");
       }
 
-      setFormData({ message: "", is_active: true, display_order: 1 });
+      setFormData({ message_ar: "", message_en: "", is_active: true, display_order: 1 });
       setEditing(null);
       await fetchMessages();
     } catch (error: any) {
@@ -104,7 +108,8 @@ export default function AdminTopBarMessagesPage() {
   const handleEdit = (msg: TopBarMessage) => {
     setEditing(msg.id);
     setFormData({
-      message: msg.message,
+      message_ar: msg.message_ar,
+      message_en: msg.message_en || "",
       is_active: msg.is_active,
       display_order: msg.display_order,
     });
@@ -146,7 +151,7 @@ export default function AdminTopBarMessagesPage() {
 
   const cancelEdit = () => {
     setEditing(null);
-    setFormData({ message: "", is_active: true, display_order: 1 });
+    setFormData({ message_ar: "", message_en: "", is_active: true, display_order: 1 });
     setMessage("");
   };
 
@@ -182,15 +187,28 @@ export default function AdminTopBarMessagesPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">
-                الرسالة
+                الرسالة بالعربية
               </label>
               <input
                 type="text"
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                value={formData.message_ar}
+                onChange={(e) => setFormData({ ...formData, message_ar: e.target.value })}
                 className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-[#0d1b2a] text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                 placeholder="شحن مجاني للطلبات فوق 300 جنيه"
                 required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">
+                الرسالة بالإنجليزية (اختياري)
+              </label>
+              <input
+                type="text"
+                value={formData.message_en}
+                onChange={(e) => setFormData({ ...formData, message_en: e.target.value })}
+                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-[#0d1b2a] text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                placeholder="Free shipping on orders over 300 EGP"
               />
             </div>
 
@@ -283,9 +301,14 @@ export default function AdminTopBarMessagesPage() {
                             {msg.is_active ? "نشط" : "معطل"}
                           </span>
                         </div>
-                        <p className="text-slate-900 dark:text-white font-medium">
-                          {msg.message}
+                        <p className="text-slate-900 dark:text-white font-medium mb-1">
+                          {msg.message_ar}
                         </p>
+                        {msg.message_en && (
+                          <p className="text-slate-600 dark:text-slate-400 text-sm">
+                            {msg.message_en}
+                          </p>
+                        )}
                       </div>
 
                       <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">

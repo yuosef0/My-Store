@@ -5,7 +5,8 @@ import { supabase } from "../lib/supabaseClient";
 
 interface TopBarMessage {
   id: string;
-  message: string;
+  message_ar: string;
+  message_en: string | null;
   is_active: boolean;
   display_order: number;
 }
@@ -29,7 +30,8 @@ const TopBar = () => {
           // استخدام رسالة افتراضية في حالة الخطأ
           setMessages([{
             id: "default",
-            message: "شحن مجاني للطلبات فوق 300 جنيه",
+            message_ar: "شحن مجاني للطلبات فوق 300 جنيه",
+            message_en: "Free shipping on orders over 300 EGP",
             is_active: true,
             display_order: 1
           }]);
@@ -39,7 +41,8 @@ const TopBar = () => {
           // رسالة افتراضية إذا لم توجد رسائل
           setMessages([{
             id: "default",
-            message: "شحن مجاني للطلبات فوق 300 جنيه",
+            message_ar: "شحن مجاني للطلبات فوق 300 جنيه",
+            message_en: "Free shipping on orders over 300 EGP",
             is_active: true,
             display_order: 1
           }]);
@@ -48,7 +51,8 @@ const TopBar = () => {
         console.error("Error:", error);
         setMessages([{
           id: "default",
-          message: "شحن مجاني للطلبات فوق 300 جنيه",
+          message_ar: "شحن مجاني للطلبات فوق 300 جنيه",
+          message_en: "Free shipping on orders over 300 EGP",
           is_active: true,
           display_order: 1
         }]);
@@ -111,7 +115,7 @@ const TopBar = () => {
                       : "opacity-0 translate-y-full"
                   }`}
                 >
-                  <span className="truncate px-2">{msg.message}</span>
+                  <span className="truncate px-2">{msg.message_ar}</span>
                 </div>
               ))}
             </div>
