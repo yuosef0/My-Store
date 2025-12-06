@@ -69,12 +69,6 @@ export default function AdminThemeSettingsPage() {
 
       setMessage("✅ تم حفظ الألوان بنجاح!");
 
-      // Refresh settings
-      await fetchSettings();
-
-      // Trigger a custom event to notify ThemeProvider
-      window.dispatchEvent(new Event("theme-updated"));
-
       // Apply colors immediately to current page
       const root = document.documentElement;
       root.style.setProperty("--color-primary", formData.primary_color || "#e60000");
@@ -83,6 +77,12 @@ export default function AdminThemeSettingsPage() {
       root.style.setProperty("--color-button-text", formData.button_text || "#ffffff");
       root.style.setProperty("--color-price", formData.price_color || "#e60000");
       root.style.setProperty("--color-product-card-bg", formData.product_card_bg || "#ffffff");
+
+      // Trigger a custom event to notify ThemeProvider
+      window.dispatchEvent(new Event("theme-updated"));
+
+      // Refresh settings
+      await fetchSettings();
     } catch (error: any) {
       console.error("خطأ:", error);
       setMessage("❌ فشل في الحفظ: " + error.message);
