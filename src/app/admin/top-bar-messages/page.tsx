@@ -58,9 +58,36 @@ export default function AdminTopBarMessagesPage() {
     setMessage("");
 
     try {
+      // التحقق من المستخدم الحالي
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log("Current user:", user?.id);
+
+      if (!user) {
+        setMessage("❌ يجب تسجيل الدخول أولاً");
+        setSubmitting(false);
+        return;
+      }
+
+      // التحقق من صلاحيات الأدمن
+      const { data: adminData, error: adminError } = await supabase
+        .from("admins")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("is_active", true)
+        .single();
+
+      console.log("Admin data:", adminData);
+      console.log("Admin error:", adminError);
+
+      if (!adminData) {
+        setMessage("❌ ليس لديك صلاحيات للقيام بهذا الإجراء");
+        setSubmitting(false);
+        return;
+      }
+
       if (editing) {
         // تحديث
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from("top_bar_messages")
           .update({
             message_ar: formData.message_ar,
@@ -68,26 +95,42 @@ export default function AdminTopBarMessagesPage() {
             is_active: formData.is_active,
             display_order: formData.display_order,
           })
-          .eq("id", editing);
+          .eq("id", editing)
+          .select();
+
+        console.log("Update result:", { data, error });
 
         if (error) {
-          console.error("Supabase error:", error);
+          console.error("Supabase error details:", {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          });
           throw error;
         }
         setMessage("✅ تم تحديث الرسالة بنجاح!");
       } else {
         // إضافة جديدة
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from("top_bar_messages")
           .insert({
             message_ar: formData.message_ar,
             message_en: formData.message_en || null,
             is_active: formData.is_active,
             display_order: formData.display_order,
-          });
+          })
+          .select();
+
+        console.log("Insert result:", { data, error });
 
         if (error) {
-          console.error("Supabase error:", error);
+          console.error("Supabase error details:", {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          });
           throw error;
         }
         setMessage("✅ تم إضافة الرسالة بنجاح!");
@@ -97,8 +140,8 @@ export default function AdminTopBarMessagesPage() {
       setEditing(null);
       await fetchMessages();
     } catch (error: any) {
-      console.error("خطأ:", error);
-      const errorMessage = error?.message || error?.error_description || JSON.stringify(error);
+      console.error("خطأ كامل:", error);
+      const errorMessage = error?.message || error?.error_description || error?.hint || JSON.stringify(error);
       setMessage("❌ فشل في الحفظ: " + errorMessage);
     } finally {
       setSubmitting(false);
