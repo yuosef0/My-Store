@@ -264,11 +264,11 @@ export default function AdminSliderPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="p-3 sm:p-4 md:p-6 lg:p-8">
       <div className="w-full max-w-7xl mx-auto">
         {/* Page Heading */}
-        <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
-          <h1 className="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-tight">
+        <div className="flex flex-wrap justify-between items-center gap-4 mb-4 sm:mb-6 lg:mb-8">
+          <h1 className="text-slate-900 dark:text-white text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight">
             إدارة السلايدر
           </h1>
           {!showForm && (
@@ -308,7 +308,7 @@ export default function AdminSliderPage() {
 
         {/* Add/Edit Form */}
         {showForm && (
-          <section className="bg-white dark:bg-[#182635] p-6 rounded-xl border border-slate-200 dark:border-slate-800 mb-8">
+          <section className="bg-white dark:bg-[#182635] p-4 sm:p-6 rounded-xl border border-slate-200 dark:border-slate-800 mb-4 sm:mb-6 lg:mb-8">
             <h2 className="text-slate-900 dark:text-white text-[22px] font-bold leading-tight tracking-tight pb-5 border-b border-slate-200 dark:border-slate-800">
               {editingId ? "تعديل صورة السلايدر" : "إضافة صورة جديدة للسلايدر"}
             </h2>
@@ -514,62 +514,117 @@ export default function AdminSliderPage() {
 
         {/* Data Table */}
         <section className="bg-white dark:bg-[#182635] rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-          <div className="overflow-x-auto">
-            {images.length === 0 ? (
-              <div className="p-8 text-center text-slate-500 dark:text-slate-400">
-                لا توجد صور في السلايدر حالياً
-              </div>
-            ) : (
-              <table className="w-full text-sm text-right text-slate-500 dark:text-slate-400">
-                <thead className="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-900/50">
-                  <tr>
-                    <th className="px-6 py-3" scope="col">
-                      معاينة
-                    </th>
-                    <th className="px-6 py-3" scope="col">
-                      العنوان
-                    </th>
-                    <th className="px-6 py-3 min-w-48" scope="col">
-                      الوصف
-                    </th>
-                    <th className="px-6 py-3" scope="col">
-                      ترتيب العرض
-                    </th>
-                    <th className="px-6 py-3" scope="col">
-                      الحالة
-                    </th>
-                    <th className="px-6 py-3" scope="col">
-                      إجراءات
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {images.map((image, index) => (
-                    <tr
-                      key={image.id}
-                      className="bg-white dark:bg-[#182635] border-b dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors"
-                    >
-                      <td className="p-4">
-                        <img
-                          className="w-24 h-12 object-cover rounded-md"
-                          src={image.image_url}
-                          alt={image.title || "Slider"}
-                        />
-                      </td>
-                      <td className="px-6 py-4 font-medium text-slate-900 dark:text-white whitespace-nowrap">
-                        {image.title || "بدون عنوان"}
-                      </td>
-                      <td className="px-6 py-4">
-                        {image.description || "لا يوجد وصف"}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <span>{image.display_order}</span>
-                          <div className="flex flex-col">
+          {images.length === 0 ? (
+            <div className="p-8 text-center text-slate-500 dark:text-slate-400">
+              لا توجد صور في السلايدر حالياً
+            </div>
+          ) : (
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-sm text-right text-slate-500 dark:text-slate-400">
+                  <thead className="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-900/50">
+                    <tr>
+                      <th className="px-6 py-3" scope="col">
+                        معاينة
+                      </th>
+                      <th className="px-6 py-3" scope="col">
+                        العنوان
+                      </th>
+                      <th className="px-6 py-3 min-w-48" scope="col">
+                        الوصف
+                      </th>
+                      <th className="px-6 py-3" scope="col">
+                        ترتيب العرض
+                      </th>
+                      <th className="px-6 py-3" scope="col">
+                        الحالة
+                      </th>
+                      <th className="px-6 py-3" scope="col">
+                        إجراءات
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {images.map((image, index) => (
+                      <tr
+                        key={image.id}
+                        className="bg-white dark:bg-[#182635] border-b dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors"
+                      >
+                        <td className="p-4">
+                          <img
+                            className="w-24 h-12 object-cover rounded-md"
+                            src={image.image_url}
+                            alt={image.title || "Slider"}
+                          />
+                        </td>
+                        <td className="px-6 py-4 font-medium text-slate-900 dark:text-white whitespace-nowrap">
+                          {image.title || "بدون عنوان"}
+                        </td>
+                        <td className="px-6 py-4">
+                          {image.description || "لا يوجد وصف"}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <span>{image.display_order}</span>
+                            <div className="flex flex-col">
+                              <button
+                                onClick={() => moveImage(image.id, "up")}
+                                disabled={index === 0}
+                                className="text-slate-400 hover:text-slate-800 dark:hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                              >
+                                <svg
+                                  className="w-5 h-5"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M5 15l7-7 7 7"
+                                  />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => moveImage(image.id, "down")}
+                                disabled={index === images.length - 1}
+                                className="text-slate-400 hover:text-slate-800 dark:hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                              >
+                                <svg
+                                  className="w-5 h-5"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M19 9l-7 7-7-7"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {image.is_active ? (
+                            <span className="inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">
+                              فعال
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-gray-700 dark:text-gray-300">
+                              غير فعال
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-4">
                             <button
-                              onClick={() => moveImage(image.id, "up")}
-                              disabled={index === 0}
-                              className="text-slate-400 hover:text-slate-800 dark:hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                              onClick={() => handleEdit(image)}
+                              className="text-slate-500 hover:text-[#137fec] dark:hover:text-[#137fec] transition-colors"
                             >
                               <svg
                                 className="w-5 h-5"
@@ -581,14 +636,13 @@ export default function AdminSliderPage() {
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
                                   strokeWidth={2}
-                                  d="M5 15l7-7 7 7"
+                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                                 />
                               </svg>
                             </button>
                             <button
-                              onClick={() => moveImage(image.id, "down")}
-                              disabled={index === images.length - 1}
-                              className="text-slate-400 hover:text-slate-800 dark:hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                              onClick={() => handleDelete(image.id)}
+                              className="text-slate-500 hover:text-red-600 dark:hover:text-red-500 transition-colors"
                             >
                               <svg
                                 className="w-5 h-5"
@@ -600,14 +654,38 @@ export default function AdminSliderPage() {
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
                                   strokeWidth={2}
-                                  d="M19 9l-7 7-7-7"
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                                 />
                               </svg>
                             </button>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-3 p-4">
+                {images.map((image, index) => (
+                  <div
+                    key={image.id}
+                    className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden"
+                  >
+                    {/* Image Preview */}
+                    <img
+                      src={image.image_url}
+                      alt={image.title || "Slider"}
+                      className="w-full h-32 object-cover"
+                    />
+
+                    <div className="p-4">
+                      {/* Header with status */}
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="font-medium text-slate-900 dark:text-white">
+                          {image.title || "بدون عنوان"}
+                        </h3>
                         {image.is_active ? (
                           <span className="inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">
                             فعال
@@ -617,53 +695,68 @@ export default function AdminSliderPage() {
                             غير فعال
                           </span>
                         )}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-4">
+                      </div>
+
+                      {/* Description */}
+                      {image.description && (
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-3 line-clamp-2">
+                          {image.description}
+                        </p>
+                      )}
+
+                      {/* Order with move buttons */}
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-sm text-slate-500 dark:text-slate-400">ترتيب العرض:</span>
+                        <span className="font-medium text-slate-900 dark:text-white">{image.display_order}</span>
+                        <div className="flex gap-1 mr-auto">
                           <button
-                            onClick={() => handleEdit(image)}
-                            className="text-slate-500 hover:text-[#137fec] dark:hover:text-[#137fec] transition-colors"
+                            onClick={() => moveImage(image.id, "up")}
+                            disabled={index === 0}
+                            className="p-1 rounded bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
                           >
-                            <svg
-                              className="w-5 h-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                              />
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                             </svg>
                           </button>
                           <button
-                            onClick={() => handleDelete(image.id)}
-                            className="text-slate-500 hover:text-red-600 dark:hover:text-red-500 transition-colors"
+                            onClick={() => moveImage(image.id, "down")}
+                            disabled={index === images.length - 1}
+                            className="p-1 rounded bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
                           >
-                            <svg
-                              className="w-5 h-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                              />
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                           </button>
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex gap-2 pt-3 border-t border-slate-200 dark:border-slate-700">
+                        <button
+                          onClick={() => handleEdit(image)}
+                          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors text-sm font-medium"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          تعديل
+                        </button>
+                        <button
+                          onClick={() => handleDelete(image.id)}
+                          className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/60 transition-colors text-sm font-medium"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          حذف
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </section>
       </div>
     </div>

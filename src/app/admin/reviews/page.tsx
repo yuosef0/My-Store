@@ -119,45 +119,25 @@ export default function AdminReviewsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/admin" className="text-blue-600 hover:text-blue-700">
-                ← لوحة التحكم
-              </Link>
-              <h1 className="text-3xl font-bold text-gray-900">
-                ⭐ إدارة التقييمات
-              </h1>
-            </div>
-            <div className="flex gap-2">
-              <Link
-                href="/admin/categories"
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
-              >
-                إدارة الفئات
-              </Link>
-              <Link
-                href="/admin/products"
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
-              >
-                إدارة المنتجات
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="p-3 sm:p-4 md:p-6 lg:p-8">
+      <div className="mx-auto max-w-7xl">
+        {/* Header */}
+        <header className="mb-4 sm:mb-6">
+          <h1 className="text-slate-900 dark:text-white text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight">
+            إدارة التقييمات
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400 mt-2 text-sm sm:text-base">
+            إدارة ومراجعة تقييمات العملاء على المنتجات
+          </p>
+        </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
         {/* رسالة النجاح/الخطأ */}
         {message && (
           <div
-            className={`mb-6 p-4 rounded-lg ${
+            className={`mb-4 sm:mb-6 p-4 rounded-lg ${
               message.includes("✅")
-                ? "bg-green-50 text-green-800 border border-green-200"
-                : "bg-red-50 text-red-800 border border-red-200"
+                ? "bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800"
+                : "bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-800"
             }`}
           >
             {message}
@@ -165,33 +145,33 @@ export default function AdminReviewsPage() {
         )}
 
         {/* الفلاتر */}
-        <div className="mb-6 flex gap-3">
+        <div className="mb-4 sm:mb-6 flex flex-wrap gap-2 sm:gap-3">
           <button
             onClick={() => setFilter("all")}
-            className={`px-6 py-2 rounded-lg font-medium transition ${
+            className={`px-4 sm:px-6 py-2 rounded-lg font-medium text-sm sm:text-base transition ${
               filter === "all"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-gray-700 border hover:bg-gray-50"
+                ? "bg-[#137fec] text-white"
+                : "bg-white dark:bg-[#182635] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/50"
             }`}
           >
             الكل ({reviews.length})
           </button>
           <button
             onClick={() => setFilter("approved")}
-            className={`px-6 py-2 rounded-lg font-medium transition ${
+            className={`px-4 sm:px-6 py-2 rounded-lg font-medium text-sm sm:text-base transition ${
               filter === "approved"
                 ? "bg-green-600 text-white"
-                : "bg-white text-gray-700 border hover:bg-gray-50"
+                : "bg-white dark:bg-[#182635] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/50"
             }`}
           >
             معتمدة
           </button>
           <button
             onClick={() => setFilter("pending")}
-            className={`px-6 py-2 rounded-lg font-medium transition ${
+            className={`px-4 sm:px-6 py-2 rounded-lg font-medium text-sm sm:text-base transition ${
               filter === "pending"
                 ? "bg-yellow-600 text-white"
-                : "bg-white text-gray-700 border hover:bg-gray-50"
+                : "bg-white dark:bg-[#182635] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/50"
             }`}
           >
             قيد المراجعة
@@ -199,61 +179,61 @@ export default function AdminReviewsPage() {
         </div>
 
         {/* جدول التقييمات */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <h2 className="text-xl font-bold p-6 border-b">
+        <div className="bg-white dark:bg-[#182635] rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <h2 className="text-lg sm:text-xl font-bold p-4 sm:p-6 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
             التقييمات ({reviews.length})
           </h2>
 
           {loading ? (
             <div className="p-8 text-center">
-              <div className="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-              <p className="mt-2 text-gray-600">جارٍ التحميل...</p>
+              <div className="inline-block w-8 h-8 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin"></div>
+              <p className="mt-2 text-slate-500 dark:text-slate-400">جارٍ التحميل...</p>
             </div>
           ) : reviews.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-slate-500 dark:text-slate-400">
               لا توجد تقييمات {filter === "approved" && "معتمدة"} {filter === "pending" && "قيد المراجعة"} حالياً
             </div>
           ) : (
-            <div className="divide-y">
+            <div className="divide-y divide-slate-200 dark:divide-slate-800">
               {reviews.map((review) => (
-                <div key={review.id} className="p-6 hover:bg-gray-50 transition">
-                  <div className="flex items-start justify-between">
+                <div key={review.id} className="p-4 sm:p-6 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                     <div className="flex-1">
                       {/* معلومات المنتج */}
                       <div className="mb-3">
-                        <span className="text-sm text-gray-500">منتج:</span>{" "}
-                        <span className="font-semibold text-gray-900">
+                        <span className="text-sm text-slate-500 dark:text-slate-400">منتج:</span>{" "}
+                        <span className="font-semibold text-slate-900 dark:text-white">
                           {review.products?.title || "منتج محذوف"}
                         </span>
                       </div>
 
                       {/* التقييم */}
                       <div className="flex items-center gap-3 mb-2">
-                        <span className="text-2xl">{renderStars(review.rating)}</span>
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className="text-xl sm:text-2xl">{renderStars(review.rating)}</span>
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                           {review.rating}/5
                         </span>
                       </div>
 
                       {/* العنوان */}
                       {review.title && (
-                        <h3 className="text-lg font-bold text-gray-900 mb-2">
+                        <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-2">
                           {review.title}
                         </h3>
                       )}
 
                       {/* التعليق */}
                       {review.comment && (
-                        <p className="text-gray-700 mb-3">{review.comment}</p>
+                        <p className="text-slate-700 dark:text-slate-300 mb-3 text-sm sm:text-base">{review.comment}</p>
                       )}
 
                       {/* معلومات العميل */}
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                         <span>👤 {review.customer_name}</span>
-                        <span>📧 {review.customer_email}</span>
+                        <span className="hidden sm:inline">📧 {review.customer_email}</span>
                         <span>📅 {formatDate(review.created_at)}</span>
                         {review.is_verified_purchase && (
-                          <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">
+                          <span className="px-2 py-1 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 rounded text-xs font-medium">
                             ✓ عميل مؤكد
                           </span>
                         )}
@@ -264,8 +244,8 @@ export default function AdminReviewsPage() {
                         <span
                           className={`px-3 py-1 text-xs rounded-full font-medium ${
                             review.is_approved
-                              ? "bg-green-100 text-green-800"
-                              : "bg-yellow-100 text-yellow-800"
+                              ? "bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300"
+                              : "bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300"
                           }`}
                         >
                           {review.is_approved ? "✓ معتمد" : "⏳ قيد المراجعة"}
@@ -274,32 +254,32 @@ export default function AdminReviewsPage() {
                     </div>
 
                     {/* الأزرار */}
-                    <div className="flex flex-col gap-2 mr-4">
+                    <div className="flex flex-row sm:flex-col gap-2 sm:mr-4">
                       <button
                         onClick={() =>
                           toggleApproval(review.id, review.is_approved)
                         }
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                        className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition ${
                           review.is_approved
-                            ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
-                            : "bg-green-100 text-green-700 hover:bg-green-200"
+                            ? "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-yellow-900/60"
+                            : "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/60"
                         }`}
                       >
-                        {review.is_approved ? "❌ إلغاء الموافقة" : "✓ موافقة"}
+                        {review.is_approved ? "إلغاء" : "موافقة"}
                       </button>
                       <button
                         onClick={() => setSelectedReview(review)}
-                        className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-200 transition"
+                        className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 rounded-lg text-xs sm:text-sm font-medium hover:bg-blue-200 dark:hover:bg-blue-900/60 transition"
                       >
-                        👁️ عرض
+                        عرض
                       </button>
                       <button
                         onClick={() =>
                           handleDelete(review.id, review.customer_name)
                         }
-                        className="px-4 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition"
+                        className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded-lg text-xs sm:text-sm font-medium hover:bg-red-200 dark:hover:bg-red-900/60 transition"
                       >
-                        🗑️ حذف
+                        حذف
                       </button>
                     </div>
                   </div>
@@ -313,20 +293,20 @@ export default function AdminReviewsPage() {
       {/* Modal لعرض تفاصيل التقييم */}
       {selectedReview && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
           onClick={() => setSelectedReview(null)}
         >
           <div
-            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6"
+            className="bg-white dark:bg-[#182635] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 border border-slate-200 dark:border-slate-800"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between mb-4">
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
                 تفاصيل التقييم
               </h2>
               <button
                 onClick={() => setSelectedReview(null)}
-                className="text-gray-500 hover:text-gray-700 text-2xl"
+                className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-2xl"
               >
                 ×
               </button>
@@ -334,76 +314,76 @@ export default function AdminReviewsPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-500">المنتج</label>
-                <p className="text-lg font-semibold">
+                <label className="text-sm font-medium text-slate-500 dark:text-slate-400">المنتج</label>
+                <p className="text-lg font-semibold text-slate-900 dark:text-white">
                   {selectedReview.products?.title || "منتج محذوف"}
                 </p>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-500">التقييم</label>
+                <label className="text-sm font-medium text-slate-500 dark:text-slate-400">التقييم</label>
                 <div className="flex items-center gap-2">
-                  <span className="text-3xl">{renderStars(selectedReview.rating)}</span>
-                  <span className="text-lg font-medium">{selectedReview.rating}/5</span>
+                  <span className="text-2xl sm:text-3xl">{renderStars(selectedReview.rating)}</span>
+                  <span className="text-lg font-medium text-slate-900 dark:text-white">{selectedReview.rating}/5</span>
                 </div>
               </div>
 
               {selectedReview.title && (
                 <div>
-                  <label className="text-sm font-medium text-gray-500">العنوان</label>
-                  <p className="text-lg font-semibold">{selectedReview.title}</p>
+                  <label className="text-sm font-medium text-slate-500 dark:text-slate-400">العنوان</label>
+                  <p className="text-lg font-semibold text-slate-900 dark:text-white">{selectedReview.title}</p>
                 </div>
               )}
 
               {selectedReview.comment && (
                 <div>
-                  <label className="text-sm font-medium text-gray-500">التعليق</label>
-                  <p className="text-gray-700 whitespace-pre-wrap">
+                  <label className="text-sm font-medium text-slate-500 dark:text-slate-400">التعليق</label>
+                  <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
                     {selectedReview.comment}
                   </p>
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-500">اسم العميل</label>
-                  <p className="font-medium">{selectedReview.customer_name}</p>
+                  <label className="text-sm font-medium text-slate-500 dark:text-slate-400">اسم العميل</label>
+                  <p className="font-medium text-slate-900 dark:text-white">{selectedReview.customer_name}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">البريد الإلكتروني</label>
-                  <p className="font-medium">{selectedReview.customer_email}</p>
+                  <label className="text-sm font-medium text-slate-500 dark:text-slate-400">البريد الإلكتروني</label>
+                  <p className="font-medium text-slate-900 dark:text-white break-all">{selectedReview.customer_email}</p>
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-500">تاريخ الإنشاء</label>
-                <p className="font-medium">{formatDate(selectedReview.created_at)}</p>
+                <label className="text-sm font-medium text-slate-500 dark:text-slate-400">تاريخ الإنشاء</label>
+                <p className="font-medium text-slate-900 dark:text-white">{formatDate(selectedReview.created_at)}</p>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {selectedReview.is_verified_purchase && (
-                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                  <span className="px-3 py-1 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 rounded-full text-sm font-medium">
                     ✓ عميل مؤكد
                   </span>
                 )}
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium ${
                     selectedReview.is_approved
-                      ? "bg-green-100 text-green-800"
-                      : "bg-yellow-100 text-yellow-800"
+                      ? "bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300"
+                      : "bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300"
                   }`}
                 >
                   {selectedReview.is_approved ? "✓ معتمد" : "⏳ قيد المراجعة"}
                 </span>
               </div>
 
-              <div className="pt-4 border-t flex gap-3">
+              <div className="pt-4 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={() => {
                     toggleApproval(selectedReview.id, selectedReview.is_approved);
                     setSelectedReview(null);
                   }}
-                  className={`flex-1 px-4 py-2 rounded-lg font-medium transition ${
+                  className={`flex-1 px-4 py-2.5 rounded-lg font-medium transition ${
                     selectedReview.is_approved
                       ? "bg-yellow-600 text-white hover:bg-yellow-700"
                       : "bg-green-600 text-white hover:bg-green-700"
@@ -413,7 +393,7 @@ export default function AdminReviewsPage() {
                 </button>
                 <button
                   onClick={() => setSelectedReview(null)}
-                  className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition"
+                  className="px-6 py-2.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-medium hover:bg-slate-300 dark:hover:bg-slate-600 transition"
                 >
                   إغلاق
                 </button>
@@ -422,6 +402,6 @@ export default function AdminReviewsPage() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }
