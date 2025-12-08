@@ -275,7 +275,7 @@ export default function AdminCouponsPage() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-3 sm:p-4 md:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl">
         {/* رسالة النجاح/الخطأ */}
         {message && (
@@ -291,8 +291,8 @@ export default function AdminCouponsPage() {
         )}
 
         {/* Page Heading */}
-        <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
-          <h1 className="text-slate-900 dark:text-white text-3xl font-bold leading-tight tracking-tight">
+        <div className="flex flex-wrap justify-between items-center gap-4 mb-4 sm:mb-6 lg:mb-8">
+          <h1 className="text-slate-900 dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">
             إدارة الكوبونات
           </h1>
           {!isAddingNew && !editingCoupon && (
@@ -310,8 +310,8 @@ export default function AdminCouponsPage() {
 
         {/* نموذج إضافة/تعديل كوبون */}
         {(isAddingNew || editingCoupon) && (
-          <div className="bg-white dark:bg-[#182635] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 mb-6">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-[#182635] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-4">
               {editingCoupon ? "تعديل الكوبون" : "إضافة كوبون جديد"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -477,11 +477,11 @@ export default function AdminCouponsPage() {
                 </div>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="bg-[#137fec] text-white px-6 py-2 rounded-lg hover:bg-[#137fec]/90 disabled:opacity-50 transition-colors"
+                  className="flex-1 sm:flex-none bg-[#137fec] text-white px-6 py-2.5 rounded-lg hover:bg-[#137fec]/90 disabled:opacity-50 transition-colors font-medium"
                 >
                   {submitting
                     ? "جارٍ الحفظ..."
@@ -492,7 +492,7 @@ export default function AdminCouponsPage() {
                 <button
                   type="button"
                   onClick={cancelEdit}
-                  className="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-6 py-2 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+                  className="flex-1 sm:flex-none bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-6 py-2.5 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors font-medium"
                 >
                   إلغاء
                 </button>
@@ -502,7 +502,7 @@ export default function AdminCouponsPage() {
         )}
 
         {/* Controls: Search and Filters */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 mb-4 sm:mb-6">
           {/* SearchBar */}
           <div className="w-full md:w-1/3">
             <label className="flex flex-col min-w-40 h-12 w-full">
@@ -582,112 +582,191 @@ export default function AdminCouponsPage() {
                 {searchQuery ? "لا توجد نتائج للبحث" : "لا توجد كوبونات حالياً"}
               </div>
             ) : (
-              <div className="admin-table-container">
-                <table className="w-full text-right">
-                  <thead className="bg-slate-50 dark:bg-slate-900/50">
-                    <tr>
-                      <th className="px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
-                        كود الكوبون
-                      </th>
-                      <th className="px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
-                        نوع الخصم
-                      </th>
-                      <th className="px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
-                        القيمة
-                      </th>
-                      <th className="px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
-                        الاستخدام
-                      </th>
-                      <th className="px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
-                        الحالة
-                      </th>
-                      <th className="px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
-                        تاريخ الانتهاء
-                      </th>
-                      <th className="px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
-                        إجراءات
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                    {filteredCoupons.map((coupon) => {
-                      const status = getCouponStatus(coupon);
-                      return (
-                        <tr
-                          key={coupon.id}
-                          className="hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors"
-                        >
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-800 dark:text-slate-100">
+              <>
+                {/* Desktop Table View */}
+                <div className="hidden md:block admin-table-container">
+                  <table className="w-full text-right">
+                    <thead className="bg-slate-50 dark:bg-slate-900/50">
+                      <tr>
+                        <th className="px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
+                          كود الكوبون
+                        </th>
+                        <th className="px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
+                          نوع الخصم
+                        </th>
+                        <th className="px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
+                          القيمة
+                        </th>
+                        <th className="px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
+                          الاستخدام
+                        </th>
+                        <th className="px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
+                          الحالة
+                        </th>
+                        <th className="px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
+                          تاريخ الانتهاء
+                        </th>
+                        <th className="px-6 py-4 text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
+                          إجراءات
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+                      {filteredCoupons.map((coupon) => {
+                        const status = getCouponStatus(coupon);
+                        return (
+                          <tr
+                            key={coupon.id}
+                            className="hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors"
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-800 dark:text-slate-100">
+                              {coupon.code}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
+                              {coupon.discount_type === "percentage"
+                                ? "نسبة مئوية"
+                                : "مبلغ ثابت"}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
+                              {coupon.discount_value}
+                              {coupon.discount_type === "percentage" ? "%" : " جنيه"}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
+                              {coupon.used_count}/{coupon.usage_limit || "∞"}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span
+                                className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${status.className}`}
+                              >
+                                {status.label}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
+                              {formatDate(coupon.valid_until)}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                              <div className="flex items-center gap-4">
+                                <button
+                                  onClick={() => startEdit(coupon)}
+                                  className="text-[#137fec] hover:text-[#137fec]/80 dark:text-[#137fec] dark:hover:text-[#137fec]/80 transition-colors"
+                                >
+                                  <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                    />
+                                  </svg>
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(coupon.id, coupon.code)}
+                                  className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+                                >
+                                  <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                    />
+                                  </svg>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Card View */}
+                <div className="md:hidden space-y-3 p-4">
+                  {filteredCoupons.map((coupon) => {
+                    const status = getCouponStatus(coupon);
+                    return (
+                      <div
+                        key={coupon.id}
+                        className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4"
+                      >
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-3 pb-3 border-b border-slate-200 dark:border-slate-700">
+                          <div className="font-bold text-lg text-[#137fec]">
                             {coupon.code}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
-                            {coupon.discount_type === "percentage"
-                              ? "نسبة مئوية"
-                              : "مبلغ ثابت"}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
-                            {coupon.discount_value}
-                            {coupon.discount_type === "percentage" ? "%" : " جنيه"}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
-                            {coupon.used_count}/{coupon.usage_limit || "∞"}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span
-                              className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${status.className}`}
-                            >
-                              {status.label}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
-                            {formatDate(coupon.valid_until)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div className="flex items-center gap-4">
-                              <button
-                                onClick={() => startEdit(coupon)}
-                                className="text-[#137fec] hover:text-[#137fec]/80 dark:text-[#137fec] dark:hover:text-[#137fec]/80 transition-colors"
-                              >
-                                <svg
-                                  className="w-5 h-5"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                  />
-                                </svg>
-                              </button>
-                              <button
-                                onClick={() => handleDelete(coupon.id, coupon.code)}
-                                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
-                              >
-                                <svg
-                                  className="w-5 h-5"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                  />
-                                </svg>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                          </div>
+                          <span
+                            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${status.className}`}
+                          >
+                            {status.label}
+                          </span>
+                        </div>
+
+                        {/* Details */}
+                        <div className="grid grid-cols-2 gap-3 mb-3 text-sm">
+                          <div>
+                            <span className="text-slate-500 dark:text-slate-400">نوع الخصم:</span>
+                            <p className="font-medium text-slate-900 dark:text-slate-100">
+                              {coupon.discount_type === "percentage" ? "نسبة مئوية" : "مبلغ ثابت"}
+                            </p>
+                          </div>
+                          <div>
+                            <span className="text-slate-500 dark:text-slate-400">القيمة:</span>
+                            <p className="font-medium text-slate-900 dark:text-slate-100">
+                              {coupon.discount_value}
+                              {coupon.discount_type === "percentage" ? "%" : " جنيه"}
+                            </p>
+                          </div>
+                          <div>
+                            <span className="text-slate-500 dark:text-slate-400">الاستخدام:</span>
+                            <p className="font-medium text-slate-900 dark:text-slate-100">
+                              {coupon.used_count}/{coupon.usage_limit || "∞"}
+                            </p>
+                          </div>
+                          <div>
+                            <span className="text-slate-500 dark:text-slate-400">تاريخ الانتهاء:</span>
+                            <p className="font-medium text-slate-900 dark:text-slate-100">
+                              {formatDate(coupon.valid_until)}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex gap-2 pt-3 border-t border-slate-200 dark:border-slate-700">
+                          <button
+                            onClick={() => startEdit(coupon)}
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors text-sm font-medium"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            تعديل
+                          </button>
+                          <button
+                            onClick={() => handleDelete(coupon.id, coupon.code)}
+                            className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/60 transition-colors text-sm font-medium"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            حذف
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
             )}
           </div>
         </div>
