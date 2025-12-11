@@ -40,6 +40,8 @@ export default function AdminProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"all" | "available" | "low" | "out">("all");
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Form states
   const [formData, setFormData] = useState({
@@ -313,6 +315,32 @@ export default function AdminProductsPage() {
   };
 
   const filteredProducts = getFilteredProducts();
+
+  // حساب عدد الصفحات
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
+  // الحصول على المنتجات للصفحة الحالية
+  const indexOfLastProduct = currentPage * itemsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+
+  // دوال التنقل بين الصفحات
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  // إعادة تعيين الصفحة عند البحث أو تغيير التبويب
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, activeTab]);
 
   // تحديد/إلغاء تحديد منتج
   const toggleProductSelection = (productId: string) => {
@@ -683,40 +711,6 @@ export default function AdminProductsPage() {
                 </div>
               </label>
             </div>
-            <div className="flex items-center gap-2">
-              <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-lg h-11 px-3 sm:px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-                  />
-                </svg>
-                <span className="hidden sm:inline">فلتر</span>
-              </button>
-              <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-lg h-11 px-3 sm:px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                  />
-                </svg>
-                <span className="hidden sm:inline">تصدير</span>
-              </button>
-            </div>
           </div>
 
           {/* Tabs */}
@@ -818,7 +812,7 @@ export default function AdminProductsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredProducts.map((product) => {
+                    {currentProducts.map((product) => {
                       const category = categories.find(
                         (c) => c.id === product.category_id
                       );
@@ -935,7 +929,7 @@ export default function AdminProductsPage() {
 
               {/* Mobile Card View */}
               <div className="lg:hidden space-y-3">
-                {filteredProducts.map((product) => {
+                {currentProducts.map((product) => {
                   const category = categories.find((c) => c.id === product.category_id);
                   const stockStatus = getStockStatus(product.stock);
                   return (
@@ -1024,15 +1018,52 @@ export default function AdminProductsPage() {
 
               {/* Pagination */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-slate-200 dark:border-slate-800">
-                <p className="text-sm text-slate-500 dark:text-slate-400 text-center sm:text-right">
-                  عرض {filteredProducts.length} من {products.length} منتج
-                </p>
+                <span className="text-sm text-slate-500 dark:text-slate-400">
+                  عرض {indexOfFirstProduct + 1}-{Math.min(indexOfLastProduct, filteredProducts.length)} من {filteredProducts.length} منتج
+                </span>
                 <div className="flex items-center gap-2">
-                  <button className="flex items-center justify-center rounded-lg h-9 px-3 sm:px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                  <button
+                    onClick={prevPage}
+                    disabled={currentPage === 1}
+                    className="flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <svg
+                      className="w-5 h-5 ml-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
                     السابق
                   </button>
-                  <button className="flex items-center justify-center rounded-lg h-9 px-3 sm:px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                  <span className="text-sm text-slate-700 dark:text-slate-300 px-3">
+                    صفحة {currentPage} من {totalPages || 1}
+                  </span>
+                  <button
+                    onClick={nextPage}
+                    disabled={currentPage === totalPages}
+                    className="flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
                     التالي
+                    <svg
+                      className="w-5 h-5 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
                   </button>
                 </div>
               </div>
