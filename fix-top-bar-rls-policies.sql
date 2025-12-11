@@ -5,9 +5,13 @@
 -- عند محاولة إضافة أو تعديل رسائل الشريط الأحمر
 -- ============================================
 
--- 1️⃣ التأكد من وجود دالة is_admin
+-- 1️⃣ حذف وإعادة إنشاء دالة is_admin
 -- ============================================
-CREATE OR REPLACE FUNCTION is_admin(user_id UUID)
+-- حذف الدالة القديمة إذا كانت موجودة
+DROP FUNCTION IF EXISTS is_admin(UUID);
+
+-- إنشاء الدالة من جديد
+CREATE FUNCTION is_admin(user_id UUID)
 RETURNS BOOLEAN AS $$
 BEGIN
   RETURN EXISTS (
