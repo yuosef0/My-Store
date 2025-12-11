@@ -33,26 +33,28 @@ export default function MainHeader() {
   const cartItemsCount = cart.reduce((total, item) => total + item.quantity, 0);
   const wishlistCount = wishlist.length;
 
-  // تجنب hydration mismatch
+  // تجنب hydration mismatch وتطبيق Dark Mode
   useEffect(() => {
     setMounted(true);
-    // تحقق من الوضع الحالي
-    setIsDark(document.documentElement.classList.contains('dark'));
-  }, []);
-
-  // استعادة تفضيل Dark Mode
-  useEffect(() => {
+    // التحقق من حالة Dark Mode من localStorage
     const savedMode = localStorage.getItem('darkMode');
     if (savedMode === 'true') {
       document.documentElement.classList.add('dark');
       setIsDark(true);
+    } else {
+      setIsDark(document.documentElement.classList.contains('dark'));
     }
   }, []);
 
   const toggleDarkMode = () => {
-    document.documentElement.classList.toggle('dark');
-    setIsDark(!isDark);
-    localStorage.setItem('darkMode', (!isDark).toString());
+    const newDarkState = !isDark;
+    if (newDarkState) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    setIsDark(newDarkState);
+    localStorage.setItem('darkMode', newDarkState.toString());
   };
 
   // قراءة الـ search من الـ URL
