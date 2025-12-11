@@ -13,8 +13,14 @@ export default function AdminSidebar() {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    // تحقق من الوضع الحالي عند التحميل
-    setIsDark(document.documentElement.classList.contains('dark'));
+    // التحقق من حالة Dark Mode من localStorage
+    const savedMode = localStorage.getItem('darkMode');
+    if (savedMode === 'true') {
+      document.documentElement.classList.add('dark');
+      setIsDark(true);
+    } else {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    }
   }, []);
 
   const handleLogout = async () => {
@@ -23,20 +29,15 @@ export default function AdminSidebar() {
   };
 
   const toggleDarkMode = () => {
-    document.documentElement.classList.toggle('dark');
-    setIsDark(!isDark);
-    // حفظ التفضيل في localStorage
-    localStorage.setItem('darkMode', (!isDark).toString());
-  };
-
-  // استعادة التفضيل عند التحميل
-  useEffect(() => {
-    const savedMode = localStorage.getItem('darkMode');
-    if (savedMode === 'true') {
+    const newDarkState = !isDark;
+    if (newDarkState) {
       document.documentElement.classList.add('dark');
-      setIsDark(true);
+    } else {
+      document.documentElement.classList.remove('dark');
     }
-  }, []);
+    setIsDark(newDarkState);
+    localStorage.setItem('darkMode', newDarkState.toString());
+  };
 
   const navItems = [
     {
