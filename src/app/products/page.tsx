@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -30,7 +30,7 @@ interface Category {
   slug: string;
 }
 
-export default function ProductsPage() {
+function ProductsContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -236,5 +236,17 @@ export default function ProductsPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e60000]"></div>
+      </div>
+    }>
+      <ProductsContent />
+    </Suspense>
   );
 }
