@@ -136,7 +136,7 @@ CREATE POLICY "يمكن للجميع قراءة الأدمن النشطين" ON 
             </div>
           )}
 
-          {adminData && adminData.length > 0 && adminData[0].is_active === false && (
+          {user && adminData && adminData.length > 0 && adminData[0].is_active === false && (
             <div className="mb-4">
               <p className="font-bold text-red-600">4️⃣ الحساب موجود لكن غير مفعّل!</p>
               <div className="bg-white rounded p-3 mt-2">
