@@ -143,7 +143,7 @@ export default function MainHeader() {
               </button>
 
               {/* Admin Panel Button - Only visible to admins */}
-              {mounted && isAdmin && (
+              {/* {mounted && isAdmin && (
                 <Link
                   href="/admin"
                   aria-label="Admin Panel"
@@ -155,7 +155,7 @@ export default function MainHeader() {
                   </svg>
                   <span className="hidden md:inline">لوحة التحكم</span>
                 </Link>
-              )}
+              )} */}
 
               {/* Account Icon with Dropdown */}
               <div className="relative">
