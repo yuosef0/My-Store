@@ -307,17 +307,17 @@ function HomeContent() {
                       />
 
                       {/* Overlay Content */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex flex-col justify-end items-start p-8 md:p-16">
-                        <div className="bg-black/40 backdrop-blur-sm p-6 rounded-lg max-w-2xl">
-                          <h2 className="text-3xl md:text-5xl font-extrabold mb-3 text-white">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex flex-col justify-end items-start p-3 md:p-16">
+                        <div className="bg-black/40 backdrop-blur-sm p-3 md:p-6 rounded-lg max-w-2xl">
+                          <h2 className="text-lg md:text-5xl font-extrabold mb-1 md:mb-3 text-white">
                             {sliderImages[currentSlide]?.title || "تشكيلة الصيف الجديدة"}
                           </h2>
-                          <p className="text-lg md:text-xl mb-6 max-w-md text-white">
+                          <p className="text-xs md:text-xl mb-2 md:mb-6 max-w-md text-white line-clamp-2 md:line-clamp-none">
                             {sliderImages[currentSlide]?.description || "تسوق الآن أحدث صيحات الموضة بخصومات تصل إلى 50%"}
                           </p>
                           <Link
                             href="/products"
-                            className="inline-flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 text-base font-bold leading-normal tracking-wide hover:opacity-90 transition-opacity"
+                            className="inline-flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 md:h-12 px-3 md:px-6 text-xs md:text-base font-bold leading-normal tracking-wide hover:opacity-90 transition-opacity"
                             style={{
                               backgroundColor: 'var(--color-primary)',
                               color: 'var(--color-button-text)'
