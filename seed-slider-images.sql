@@ -10,30 +10,35 @@ DELETE FROM slider_images;
 
 -- 2️⃣ إضافة صور السلايدر الجديدة
 -- ============================================
--- أولاً: نتحقق من الأعمدة الموجودة في الجدول
--- SELECT column_name FROM information_schema.columns WHERE table_name = 'slider_images';
-
--- إضافة الصور (بدون subtitle لأنه غير موجود في الجدول)
-INSERT INTO slider_images (image_url, order_index, is_active, created_at) VALUES
+INSERT INTO slider_images (image_url, title, description, display_order, is_active) VALUES
 
 -- صورة 1: ملابس رجالي
 ('https://images.unsplash.com/photo-1490114538077-0a7f8cb49891?w=1920&h=600&fit=crop',
- 1, true, NOW()),
+ 'تشكيلة رجالي جديدة',
+ 'اكتشف أحدث صيحات الموضة الرجالية',
+ 1, true),
 
 -- صورة 2: ملابس حريمي
 ('https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1920&h=600&fit=crop',
- 2, true, NOW()),
+ 'أناقة حريمي لا مثيل لها',
+ 'تسوقي أجمل الفساتين والإكسسوارات',
+ 2, true),
 
 -- صورة 3: ملابس أطفال
 ('https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=1920&h=600&fit=crop',
- 3, true, NOW()),
+ 'ملابس أطفال عصرية',
+ 'راحة وأمان لأطفالك مع تصاميم رائعة',
+ 3, true),
 
 -- صورة 4: تخفيضات
 ('https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=1920&h=600&fit=crop',
- 4, true, NOW());
+ 'تخفيضات تصل لـ 50%',
+ 'لا تفوت العروض الحصرية',
+ 4, true);
 
 -- ============================================
 -- ✅ تم إضافة صور السلايدر!
 -- ============================================
 -- إجمالي: 4 صور (رجالي، حريمي، أطفالي، تخفيضات)
+-- جميع الصور مع عناوين وأوصاف بالعربي
 -- ============================================
